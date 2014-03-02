@@ -13,14 +13,14 @@ The idea is to easily show the evolution of code over the course of the book, ba
 
     Here is how our controller looks currently:
 
-        git:///app/controlleres/users_controller.rb#initial-version
+        git:///path/to/repo.git/app/controlleres/users_controller.rb#initial-version
 
     We'd like to change the mailer call to use Resque
 
-        git-diff:///app/controllers/users_controller.rb#add-resque-to-controller
+        git:///path/to/repo.git/app/controllers/users_controller.rb#initial-version..add-resque-to-controller
 
 
-This bit of Markdown could then be translated into Git-Hub Flavored Markdown like so:
+This bit of Markdown would be interpretted as if the contents were placed inline like so:
 
     Here is how our controller looks currently:
 
@@ -52,16 +52,13 @@ This bit of Markdown could then be translated into Git-Hub Flavored Markdown lik
         else
     ```
 
-This could then feed into other engines to generate text.
-
-Finally, we'd also want to be able to show terminal output, so that we can easily generate whatever the output would be on the code in question.  This
-means that Markdown like so:
+We can also insert the output of commands:
 
     Now, let's run our tests
 
-    sh://rake test
+    sh:///path/to/wherever#rake test
 
-When we generate the output, would actually run the tests and replace that with the invocation and output, like so:
+This would be as if the output were inline like so:
 
 
     Now, let's run our tests.
@@ -76,12 +73,31 @@ When we generate the output, would actually run the tests and replace that with 
     Randomized with seed 43200
     ```
 
+== TODO
 
-== Next Steps
+Given the above, a minimal solution would be:
 
-1. Markdown-to-Markdown to insert a referenced file
-2. Markdown-to-Markdown to insert a referenced file from a specific git repo and SHA1
-3. Markdown-to-Markdown to insert a diff
-4. Markdown-to-Markdown to insert output of a shell command
+* Given some markdown files
+* And a configuration file
+* Be able to generate a multi-page HTML5 website with a table of contents
 
-Once these four steps are done, we can think about the larger structure and how that affects the output
+=== Configuration
+
+At the bare minimum the configuration file needs to indicate a structure that maps sections to markdown files.  Something like this:
+
+    {
+      front_matter: [
+        "acknowledgements.md",
+        "intro.md"
+      ],
+      main_matter: [
+        "getting_started.md",
+        ["our_first_controller.md","our_first_model.md","running_tests.md"],
+        "chapter3*.md",
+      ],
+      back_matter: [
+        "glossary.md"
+      ]
+    }
+
+We have front, main, and back matter.  Inside each we can provide a list of files the be used in order, that represent "chapters" in that section.  A chapter can be specified either as a single file, a list of files that are subsections, or a glob.  No markup is added, this just specifies the order of processing and how to make the TOC.
