@@ -10,7 +10,7 @@ Rake::RDocTask.new do |rd|
   rd.title = 'Your application title'
 end
 
-spec = eval(File.read('bookinggit.gemspec'))
+spec = eval(File.read('bookingit.gemspec'))
 
 Gem::PackageTask.new(spec) do |pkg|
 end

@@ -4,5 +4,5 @@ Feature: My bootstrapped app kinda works
   So I don't have to do it myself
 
   Scenario: App just runs
-    When I get help for "bookinggit"
+    When I get help for "bookingit"
     Then the exit status should be 0

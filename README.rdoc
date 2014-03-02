@@ -1,4 +1,4 @@
-= bookinggit
+= bookingit
 
 A basic publishing system that takes Mardown and a Git repository and produces a readable "book" in the following forms:
 

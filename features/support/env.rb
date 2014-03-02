@@ -7,9 +7,11 @@ Before do
   # Using "announce" causes massive warnings on 1.9.2
   @puts = true
   @original_rubylib = ENV['RUBYLIB']
+  @data = {}
   ENV['RUBYLIB'] = LIB_DIR + File::PATH_SEPARATOR + ENV['RUBYLIB'].to_s
 end
 
 After do
   ENV['RUBYLIB'] = @original_rubylib
+  @data = {}
 end
