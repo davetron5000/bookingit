@@ -6,6 +6,18 @@ module Bookingit
   class Renderer < Redcarpet::Render::HTML
     include FileUtils
 
+    attr_accessor :headers
+    def header(text,header_level,anchor)
+      @headers[header_level] ||= []
+      @headers[header_level] << text
+      "<h#{header_level}>#{text}</h#{header_level}>"
+    end
+
+    def doc_header
+      @headers = {}
+      ""
+    end
+
     EXTENSION_TO_LANGUAGE = {
       '.rb' => 'ruby',
       '.html' => 'html',

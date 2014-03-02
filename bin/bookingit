@@ -3,6 +3,7 @@ require 'gli'
 require 'bookingit'
 
 include GLI::App
+include FileUtils
 
 program_desc 'Manage a bookingit book'
 
@@ -19,16 +20,60 @@ end
 desc 'build your book from markdown files'
 command :build do |c|
   c.action do |global_options,options,args|
-    from = args.shift
-    to = File.join(args.shift,File.basename(from))
-    redcarpet = Redcarpet::Markdown.new(PassThroughRenderer, no_intra_emphasis: true,
-                                                                        tables: true,
-                                                            fenced_code_blocks: true,
-                                                                      autolink: true,
-                                                                 strikethrough: true,
-                                                                   superscript: true)
-    File.open(to,'w') do |file|
-      file.puts redcarpet.render(File.read(from))
+    puts pwd
+    config = Bookingit::Config.new(File.read(args.shift),File.expand_path('.'))
+    output_dir = args.shift
+    mkdir output_dir unless Dir.exists?(output_dir)
+
+    renderer = Bookingit::Renderer.new
+    redcarpet = Redcarpet::Markdown.new(renderer, no_intra_emphasis: true,
+                                                             tables: true,
+                                                 fenced_code_blocks: true,
+                                                           autolink: true,
+                                                      strikethrough: true,
+                                                        superscript: true)
+
+    chdir output_dir do
+      File.open('index.html','w') do |index|
+        index.puts %{<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+}
+        index.puts "<ol>"
+        %w(front_matter main_matter back_matter).each do |matter|
+          index.puts "<li>#{matter}<ol>"
+          config.send(matter).chapters.each_with_index do |chapter,i|
+            contents = if chapter.path.nil?
+                      chapter.sections.map(&:path).map { |path|
+                        File.read(path)
+                      }.join("\n")
+                    else
+                      File.read(chapter.path)
+                    end
+
+            output_file = "#{matter}_#{i+1}.html"
+            File.open(output_file,'w') do |file|
+              file.puts redcarpet.render(contents)
+            end
+            title = (Array(renderer.headers[1]) +
+                     Array(renderer.headers[2]) +
+                     Array(renderer.headers[3]) +
+                     Array(renderer.headers[4]) +
+                     Array(renderer.headers[5]) +
+                     Array(renderer.headers[6])).first
+            index.puts "<li><a href='#{output_file}'>#{title}</a></li>"
+          end
+          index.puts "</ol></li>"
+        end
+        index.puts "</ol>"
+        index.puts %{
+
+</body>
+</html>
+}
+      end
     end
   end
 end
