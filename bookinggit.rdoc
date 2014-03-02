@@ -1,0 +1,5 @@
+= bookinggit
+
+Generate this with
+    bookinggit rdoc
+After you have described your command line interface
