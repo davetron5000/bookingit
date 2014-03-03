@@ -13,11 +13,32 @@ desc 'Set up a new book'
 arg_name 'dir (defaults to .)'
 command :init do |c|
   c.action do |global_options,options,args|
-    raise 'not implemented'
+    dir = args.shift || "."
+    chdir dir do
+      File.open('config.json','w') do |file|
+        file.puts %{
+{
+  "front_matter": "front.md",
+  "main_matter": "main.md",
+  "back_matter": "back.md",
+}
+}
+      end
+      File.open("front.md",'w') do |file|
+        file.puts "# Intro Goes Here"
+      end
+      File.open("main.md",'w') do |file|
+        file.puts "# Main stuff here"
+      end
+      File.open("back.md",'w') do |file|
+        file.puts "# Appendeces and whatnot"
+      end
+    end
   end
 end
 
 desc 'build your book from markdown files'
+arg_name 'config_file output_dir'
 command :build do |c|
   c.action do |global_options,options,args|
     puts pwd

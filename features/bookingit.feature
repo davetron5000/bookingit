@@ -73,3 +73,9 @@ This is the glossary
     And the file "book/index.html" should contain "The continuation"
     And the file "book/index.html" should contain "back_matter_1.html"
     And the file "book/index.html" should contain "Glossary"
+
+    @wip
+  Scenario: Init a new book
+    When I run `bookingit init`
+    Then a file named "config.json" should exist
+
