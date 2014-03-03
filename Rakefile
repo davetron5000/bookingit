@@ -6,6 +6,8 @@ require 'cucumber'
 require 'cucumber/rake/task'
 require 'bundler'
 
+Bundler::GemHelper.install_tasks
+
 Rake::RDocTask.new do |rd|
   rd.main = "README.rdoc"
   rd.rdoc_files.include("README.rdoc","lib/**/*.rb","bin/**/*")
