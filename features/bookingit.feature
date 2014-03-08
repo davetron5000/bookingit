@@ -57,7 +57,7 @@ This is the glossary
   ]
 }
     """
-    When I run `bookingit build config.json book`
+    When I run `bookingit build`
     Then the exit status should be 0
     And the file "book/front_matter_1.html" should contain "This is the introduction"
     And the file "book/main_matter_1.html" should contain "This is the beginning"
@@ -74,7 +74,6 @@ This is the glossary
     And the file "book/index.html" should contain "back_matter_1.html"
     And the file "book/index.html" should contain "Glossary"
 
-    @wip
   Scenario: Init a new book
     When I run `bookingit init`
     Then a file named "config.json" should exist

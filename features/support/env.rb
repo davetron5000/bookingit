@@ -14,6 +14,6 @@ end
 After do
   ENV['RUBYLIB'] = @original_rubylib
   @files_created.each do |file|
-    FileUtils.rm file
+    FileUtils.rm file if File.exists?(file)
   end
 end

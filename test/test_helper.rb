@@ -12,3 +12,4 @@ class Test::Unit::TestCase
   # Add global extensions to the test case class here
   
 end
+I18n.enforce_available_locales = false 

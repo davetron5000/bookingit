@@ -20,7 +20,7 @@ command :init do |c|
 {
   "front_matter": "front.md",
   "main_matter": "main.md",
-  "back_matter": "back.md",
+  "back_matter": "back.md"
 }
 }
       end
@@ -38,12 +38,10 @@ command :init do |c|
 end
 
 desc 'build your book from markdown files'
-arg_name 'config_file output_dir'
 command :build do |c|
   c.action do |global_options,options,args|
-    puts pwd
-    config = Bookingit::Config.new(File.read(args.shift),File.expand_path('.'))
-    output_dir = args.shift
+    config = Bookingit::Config.new(File.read('config.json'),File.expand_path('.'))
+    output_dir = 'book'
     mkdir output_dir unless Dir.exists?(output_dir)
 
     renderer = Bookingit::Renderer.new

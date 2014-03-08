@@ -22,6 +22,30 @@ class RendererTest < Test::Unit::TestCase
     }
   end
 
+  test_that "block_code can read a file URL and guess ruby from Gemfile" do
+    Given a_file_named("Gemfile") 
+    When render_file_url_code_block
+    Then {
+      assert_equal %{<pre><code class="language-ruby">#{@code}</code></pre>},@html
+    }
+  end
+
+  test_that "block_code can read a file URL and be OK if it cannot guess" do
+    Given a_file_with_extension(".blah") 
+    When render_file_url_code_block
+    Then {
+      assert_equal %{<pre><code>#{@code}</code></pre>},@html
+    }
+  end
+
+  test_that "we can tell the renderer about other languages and extensions" do
+    Given a_file_with_extension(".blah") 
+    When render_file_url_code_block([{ languages: { '.blah' => 'blahscript' }}])
+    Then {
+      assert_equal %{<pre><code class="language-blahscript">#{@code}</code></pre>},@html
+    }
+  end
+
   test_that "block_code can read a file URL and guess scala" do
     Given a_file_with_extension(".scala") 
     When render_file_url_code_block
@@ -104,6 +128,18 @@ class RendererTest < Test::Unit::TestCase
       assert_match /index [a-z0-9]+..[a-z0-9]+ 100644/,@html
       assert_match /\-\-\- a\/foo.rb/,@html
       assert_match /\+\+\+ b\/foo.rb/,@html
+    }
+  end
+
+  test_that "a git url with a shell command runs that command on that version of the repo" do
+    Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
+    When {
+      @version = @versions.keys[0]
+      git_url = @file_git_url.gsub(/\/foo.rb/,'/')
+      @html = Bookingit::Renderer.new.block_code("#{git_url}##{@version}!cat foo.rb",nil)
+    }
+    Then {
+      assert_equal %{<pre><code class="language-shell">&gt; cat foo.rb\n#{@versions[@version]}\n</code></pre>},@html
     }
   end
 
@@ -236,9 +272,20 @@ end}
     }
   end
 
-  def render_file_url_code_block
+  def render_file_url_code_block(constructor_args=[])
     -> {
-      @html = Bookingit::Renderer.new.block_code("file://#{@path}",nil)
+      @html = Bookingit::Renderer.new(*constructor_args).block_code("file://#{@path}",nil)
+    }
+  end
+
+  def a_file_named(filename)
+    -> {
+      @code = %{#{any_string}
+}
+      @path = File.join(@tempdir,filename)
+      File.open(@path,'w') do |file|
+        file.puts @code
+      end
     }
   end
 
