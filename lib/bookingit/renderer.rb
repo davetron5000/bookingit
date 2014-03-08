@@ -7,6 +7,7 @@ module Bookingit
     include FileUtils
 
     # options:: control aspects of rendering
+    #           basedir:: Base directory from which all relative paths are referenced from
     #           languages:: a Hash of string extensions or regexps to languages.  This allows adding
     #                       new language detection not present by default
     def initialize(options={})
@@ -19,6 +20,8 @@ module Bookingit
         end
       }]
       @language_identifiers = EXTENSION_TO_LANGUAGE.merge(additional_languages)
+      @basedir = String(options[:basedir]).strip
+      @basedir = '.' if @basedir == ''
     end
 
     attr_accessor :headers
@@ -135,40 +138,44 @@ module Bookingit
     end
 
     def block_code(code, language)
-      Code.new(code).when_file { |path|
+      result = nil
+      chdir @basedir do
+        Code.new(code).when_file { |path|
 
-        code = File.read(path)
-        language = identify_language(path)
+          code = File.read(path)
+          language = identify_language(path)
 
-      }.when_git_diff { |path_in_repo,reference|
+        }.when_git_diff { |path_in_repo,reference|
 
-        code = `git diff #{reference} #{path_in_repo}`
-        language = 'diff'
+          code = `git diff #{reference} #{path_in_repo}`
+          language = 'diff'
 
-      }.when_shell_command_in_git { |path_in_repo,reference,command|
+        }.when_shell_command_in_git { |path_in_repo,reference,command|
 
-        at_version_in_git(reference) do
-          code,language = capture_command_output(path_in_repo,command)
-        end
+          at_version_in_git(reference) do
+            code,language = capture_command_output(path_in_repo,command)
+          end
 
-      }.when_file_in_git { |path_in_repo,reference|
+        }.when_file_in_git { |path_in_repo,reference|
 
-        at_version_in_git(reference) do
-          code = File.read(path_in_repo)
-        end
-        language = identify_language(path_in_repo)
+          at_version_in_git(reference) do
+            code = File.read(path_in_repo)
+          end
+          language = identify_language(path_in_repo)
 
-      }.when_shell_command { |path,command|
+        }.when_shell_command { |path,command|
 
-        code,language = capture_command_output(path,command)
+          code,language = capture_command_output(path,command)
 
-      }
-      css_class = if language.nil? || language.strip == ''
-                    ""
-                  else
-                    " class=\"language-#{language}\""
-                  end
-      %{<pre><code#{css_class}>#{CGI.escapeHTML(code)}</code></pre>}
+        }
+        css_class = if language.nil? || language.strip == ''
+                      ""
+                    else
+                      " class=\"language-#{language}\""
+                    end
+        result = %{<pre><code#{css_class}>#{CGI.escapeHTML(code)}</code></pre>}
+      end
+      result
     end
 
   private

@@ -14,6 +14,11 @@ class RendererTest < Test::Unit::TestCase
     remove_entry @tempdir
   end
 
+  def renderer(options={})
+    options = { basedir: @tempdir }.merge(options)
+    Bookingit::Renderer.new(options)
+  end
+
   test_that "block_code can read a file URL and guess ruby" do
     Given a_file_with_extension(".rb") 
     When render_file_url_code_block
@@ -40,7 +45,7 @@ class RendererTest < Test::Unit::TestCase
 
   test_that "we can tell the renderer about other languages and extensions" do
     Given a_file_with_extension(".blah") 
-    When render_file_url_code_block([{ languages: { '.blah' => 'blahscript' }}])
+    When render_file_url_code_block(languages: { '.blah' => 'blahscript' })
     Then {
       assert_equal %{<pre><code class="language-blahscript">#{@code}</code></pre>},@html
     }
@@ -80,7 +85,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_git_repo_with_file("foo.rb")
     When {
       @code = -> {
-        Bookingit::Renderer.new.block_code(@file_git_url,nil)
+        renderer.block_code(@file_git_url,nil)
       }
     }
     Then {
@@ -92,7 +97,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_git_repo_with_two_verions_of_file("foo.rb")
     When {
       @parsed_versions = Hash[@versions.map { |sha1,_|
-        [sha1, Bookingit::Renderer.new.block_code(@file_git_url + "##{sha1}",nil)]
+        [sha1, renderer.block_code(@file_git_url + "##{sha1}",nil)]
       }]
     }
     Then {
@@ -106,7 +111,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
     When {
       @parsed_versions = Hash[@versions.map { |tagname,_|
-        [tagname, Bookingit::Renderer.new.block_code(@file_git_url + "##{tagname}",nil)]
+        [tagname, renderer.block_code(@file_git_url + "##{tagname}",nil)]
       }]
     }
     Then {
@@ -120,7 +125,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
     When {
       url = @file_git_url + "#" + @versions.keys[0] + ".." + @versions.keys[1]
-      @html = Bookingit::Renderer.new.block_code(url,nil)
+      @html = renderer.block_code(url,nil)
     }
     Then {
       assert_match /<pre><code class=\"language-diff\">diff --git/,@html
@@ -136,7 +141,7 @@ class RendererTest < Test::Unit::TestCase
     When {
       @version = @versions.keys[0]
       git_url = @file_git_url.gsub(/\/foo.rb/,'/')
-      @html = Bookingit::Renderer.new.block_code("#{git_url}##{@version}!cat foo.rb",nil)
+      @html = renderer.block_code("#{git_url}##{@version}!cat foo.rb",nil)
     }
     Then {
       assert_equal %{<pre><code class="language-shell">&gt; cat foo.rb\n#{@versions[@version]}\n</code></pre>},@html
@@ -155,7 +160,7 @@ class RendererTest < Test::Unit::TestCase
       end
     }
     When {
-      @html = Bookingit::Renderer.new.block_code("sh://#{@tempdir}/play#ls -1",nil)
+      @html = renderer.block_code("sh://play#ls -1",nil)
     }
     Then {
       assert_equal %{<pre><code class="language-shell">&gt; ls -1
@@ -168,7 +173,7 @@ quux
 
   test_that "we pass through inline code blocks" do
     When {
-      @html = Bookingit::Renderer.new.block_code("class Foo", 'coffeescript')
+      @html = renderer.block_code("class Foo", 'coffeescript')
     }
     Then {
       assert_equal %{<pre><code class="language-coffeescript">class Foo</code></pre>},@html
@@ -177,7 +182,7 @@ quux
 
   test_that "we omit the language class if it's not provided in inline code" do
     When {
-      @html = Bookingit::Renderer.new.block_code("class Foo", nil)
+      @html = renderer.block_code("class Foo", nil)
     }
     Then {
       assert_equal %{<pre><code>class Foo</code></pre>},@html
@@ -215,7 +220,7 @@ end}
         create_and_commit_file(file,code)
         # make sure test doesn't get the HEAD version
       end
-      @file_git_url = "git://#{File.join(@tempdir,'git_repo.git')}/#{file}"
+      @file_git_url = "git://git_repo.git/#{file}"
     }
   end
 
@@ -243,7 +248,7 @@ end}
         create_and_commit_file(file,code)
         # make sure test doesn't get the HEAD version
       end
-      @file_git_url = "git://#{File.join(@tempdir,'git_repo.git')}/#{file}"
+      @file_git_url = "git://git_repo.git/#{file}"
     }
   end
 
@@ -268,13 +273,13 @@ end}
 end}
         create_and_commit_file(file,@code)
       end
-      @file_git_url = "git://#{File.join(@tempdir,'git_repo.git')}/#{file}"
+      @file_git_url = "git://git_repo.git/#{file}"
     }
   end
 
-  def render_file_url_code_block(constructor_args=[])
+  def render_file_url_code_block(options={})
     -> {
-      @html = Bookingit::Renderer.new(*constructor_args).block_code("file://#{@path}",nil)
+      @html = renderer(options).block_code("file://#{@path.gsub(/#{Regexp.escape(@tempdir)}\/?/,'')}",nil)
     }
   end
 

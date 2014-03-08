@@ -49,3 +49,4 @@ db/tmp
 spec/file-upload/stylecard-from-db.jpg
 .env
 results.html
+pkg
