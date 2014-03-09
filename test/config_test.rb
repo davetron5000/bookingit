@@ -104,6 +104,29 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
     }
   end
 
+  test_that "converts rendering config" do
+    Given {
+      @config = {
+        rendering: {
+          stylesheets: 'blah.css',
+          languages: {
+            ".coffee" => "coffeescript",
+            "/^Bowerfile$/" => "ruby",
+          },
+          git_repos_basedir: "/tmp",
+        }
+      }
+    }
+    When {
+      @normalized_config = Bookingit::Config.new(@config.to_json,@tempdir)
+    }
+    Then  {
+      assert_equal "/tmp",@normalized_config.rendering_config[:basedir]
+      assert_equal({ ".coffee" => "coffeescript", /^Bowerfile$/ => "ruby" },@normalized_config.rendering_config[:languages])
+      assert_equal ['blah.css'],@normalized_config.rendering_config[:stylesheets]
+    }
+  end
+
 private
 
   def some_markdown_files

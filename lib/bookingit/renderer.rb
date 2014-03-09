@@ -8,6 +8,7 @@ module Bookingit
 
     # options:: control aspects of rendering
     #           basedir:: Base directory from which all relative paths are referenced from
+    #           stylesheets:: Array of CSS files to include in the preamble
     #           languages:: a Hash of string extensions or regexps to languages.  This allows adding
     #                       new language detection not present by default
     def initialize(options={})
@@ -22,6 +23,7 @@ module Bookingit
       @language_identifiers = EXTENSION_TO_LANGUAGE.merge(additional_languages)
       @basedir = String(options[:basedir]).strip
       @basedir = '.' if @basedir == ''
+      @stylesheets = Array(options[:stylesheets])
     end
 
     attr_accessor :headers
@@ -33,7 +35,20 @@ module Bookingit
 
     def doc_header
       @headers = {}
-      ""
+      header = %{<!DOCTYPE html>
+<html>
+<head>} + @stylesheets.map { |stylesheet|
+        "  <link href='#{stylesheet}' rel='stylesheet' type='text/css' media='all'>"
+      }.join("\n") + %{
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta charset="utf-8">
+</head>
+<body>
+      }
+    end
+
+    def doc_footer
+      "</body></html>"
     end
 
     EXTENSION_TO_LANGUAGE = {
@@ -62,12 +77,6 @@ module Bookingit
           block.call(path)
         end
         self
-      end
-
-      def when_git_diff(&block)
-      end
-
-      def when_shell_command_in_git(&block)
       end
 
       def when_git_reference(&block)

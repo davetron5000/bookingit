@@ -1,26 +1,27 @@
 = bookingit
 
-A basic publishing system that takes Mardown and a Git repository and produces a readable "book" in the following forms:
+A basic publishing system that takes Mardown and Git repositories and produces a readable "book" in the following forms:
 
 * Website
 * PDF
 * EBook
 
-The idea is to easily show the evolution of code over the course of the book, based entirely on git diffs and pull requests.
+The idea is that you can show the evolution of code by referencing particular versions or diffs beteween verions.  Further, you can show the actual output of commands run from particular verisons of the repo.
+
 
 == Example
 
+Let's say we have a Rails app locally in a git repo called "foobar".  We coudl write the following:
 
     Here is how our controller looks currently:
 
-        git:///path/to/repo.git/app/controlleres/users_controller.rb#initial-version
+        git://foobar.git/app/controlleres/users_controller.rb#initial-version
 
     We'd like to change the mailer call to use Resque
 
-        git:///path/to/repo.git/app/controllers/users_controller.rb#initial-version..add-resque-to-controller
+        git://foobar.git/app/controllers/users_controller.rb#initial-version..add-resque-to-controller
 
-
-This bit of Markdown would be interpretted as if the contents were placed inline like so:
+Instead of interpreting the code blocks as verbatim text, bookingit notices the single-line URL and will read the file or diff based on it, and substitute that into the output.  It would be the same as if we wrote our Markdown like so:
 
     Here is how our controller looks currently:
 
@@ -52,52 +53,68 @@ This bit of Markdown would be interpretted as if the contents were placed inline
         else
     ```
 
-We can also insert the output of commands:
+Here is what is currently supported:
 
-    Now, let's run our tests
+* <code>git://some_repo.git/path/in/repo.rb#sha1_or_tag</code> - show the contents of the file from the git repo at the given version (either SHA1 or tag)
+* <code>git://some_repo.git/path/in/repo.rb#sha1_or_tag..other_sha1_or_tag</code> - show a diff of the contents of the file between the two versions.
+* <code>git://some_repo.git/#sha1_or_tag!rake test</code> - check out the repo at the given SHA1 or tag, then run the command after the bang, and include the output of that command in the text
+* <code>sh:///some/filesystem/path#ls -l</code> - cd to the given path, run the command, and include its output in the text.
 
-    sh:///path/to/wherever#rake test
-
-This would be as if the output were inline like so:
-
-
-    Now, let's run our tests.
-
-    ```bash
-    > rake test
-    ...........................
-
-    Finished in 0.00946 seconds
-    27 examples, 0 failures
-
-    Randomized with seed 43200
-    ```
-
-== TODO
-
-Given the above, a minimal solution would be:
-
-* Given some markdown files
-* And a configuration file
-* Be able to generate a multi-page HTML5 website with a table of contents
+The paths used can be relative (e.g. <code>git://some_repo.git</code>) or absolute (e.g. <code>git:///some/other/repo.git</code>).  Relative paths are relative to the directory where ran +bookingit+.  You can change where the git repos are located by setting +git_repos_basedir+ in your config (see below).
 
 === Configuration
 
-At the bare minimum the configuration file needs to indicate a structure that maps sections to markdown files.  Something like this:
+The book's configuration is driven by +config.json+, which looks like so:
 
     {
-      front_matter: [
-        "acknowledgements.md",
+      "front_matter": [
         "intro.md"
       ],
-      main_matter: [
-        "getting_started.md",
-        ["our_first_controller.md","our_first_model.md","running_tests.md"],
-        "chapter3*.md",
+      "main_matter": [
+        "chapter1.md",
+        "chapter2.*.md"
       ],
-      back_matter: [
-        "glossary.md"
-      ]
+      "back_matter": [
+        "appendix.md"
+      ],
+      "rendering": {
+        "stylesheets": "styles.css",
+        "git_repos_basedir": "./git_repos",
+        "languages" : {
+          ".super": "superscript",
+          "/Makefile": "make"
+        }
+      }
     }
 
-We have front, main, and back matter.  Inside each we can provide a list of files the be used in order, that represent "chapters" in that section.  A chapter can be specified either as a single file, a list of files that are subsections, or a glob.  No markup is added, this just specifies the order of processing and how to make the TOC.
+The book's contents are described in +front_matter+, +main_matter+, and +back_matter+.  The values of these can either be a single markdown file, an array of files, or a glob pattern.  The +main_matter+ entries can themselves be arrays or globs.  For example, if you have a four chapter book, but chapter 3 is spread across several files:
+
+    {
+      "front_matter": "intro.md"
+      "main_matter": [
+        "chapter1.md",
+        "chapter2.md",
+        "chapter3_*.md",
+        "chapter4.md"
+      ],
+      "back_matter": "appendix.md"
+    }
+
+You could name them explicitly, too:
+
+    {
+      "front_matter": "intro.md"
+      "main_matter": [
+        "chapter1.md",
+        "chapter2.md",
+        ["chapter3_1.md", "chapter3_2.md" ],
+        "chapter4.md"
+      ],
+      "back_matter": "appendix.md"
+    }
+
+The +rendering+ section allows some control over the rendering process.  It supports three keys:
+
++git_repos_basedir+:: path to where your git repos are, for bringing in code.  For example, if you specify the value "./repos", then a url like <code>git://my_repo.git/foo/bar.rb#version-1</code> would look in <code>./repos/my_repo/foo/bar.rb</code> for the file contents.  This path should be relative to where you run +bookingit+.
++stylesheets+:: An array of stylesheets that will be copied and linked to each HTML page
++languages+:: A map of file extensions or regexps to language names for syntax detection.  If the key starts and ends with a +/+, it will be interpreted as a regexp, otherwise as a file extension

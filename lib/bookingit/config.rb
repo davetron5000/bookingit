@@ -7,7 +7,8 @@ module Bookingit
 
     attr_reader :front_matter,
                 :main_matter,
-                :back_matter
+                :back_matter,
+                :rendering_config
 
     def initialize(config_json,root_dir)
       config_hash = JSON.parse(config_json)
@@ -15,6 +16,25 @@ module Bookingit
       @front_matter = Matter.new(config_hash['front_matter'],root_dir)
       @main_matter  = Matter.new(config_hash['main_matter'],root_dir)
       @back_matter  = Matter.new(config_hash['back_matter'],root_dir)
+      @rendering_config = create_rendering_config(config_hash['rendering'])
+    end
+
+  private
+
+    def create_rendering_config(raw_config)
+      raw_config ||= {}
+      rendering_config = {}
+      rendering_config[:stylesheets] = Array(raw_config['stylesheets'])
+      rendering_config[:basedir] = raw_config['git_repos_basedir']
+      rendering_config[:languages] = Hash[(raw_config['languages'] || {}).map { |match,language|
+        if match =~ /^\/(.+)\/$/
+          [Regexp.new($1),language]
+        else
+          [match,language]
+        end
+      }]
+
+      rendering_config
     end
 
     class Matter

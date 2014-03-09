@@ -8,6 +8,7 @@ Before do
   @puts = true
   @original_rubylib = ENV['RUBYLIB']
   @files_created = []
+  @dirs_created = []
   ENV['RUBYLIB'] = LIB_DIR + File::PATH_SEPARATOR + ENV['RUBYLIB'].to_s
 end
 
@@ -15,5 +16,8 @@ After do
   ENV['RUBYLIB'] = @original_rubylib
   @files_created.each do |file|
     FileUtils.rm file if File.exists?(file)
+  end
+  @dirs_created.each do |dir|
+    FileUtils.rm_rf dir if File.exists?(dir)
   end
 end
