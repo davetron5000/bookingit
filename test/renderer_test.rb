@@ -23,7 +23,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_file_with_extension(".rb") 
     When render_file_url_code_block
     Then {
-      assert_equal %{<pre><code class="language-ruby">#{@code}</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="language-ruby">#{@code}</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
     }
   end
 
@@ -31,7 +31,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_file_named("Gemfile") 
     When render_file_url_code_block
     Then {
-      assert_equal %{<pre><code class="language-ruby">#{@code}</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="language-ruby">#{@code}</code></pre><footer><h1>Gemfile</h1></footer></article>},@html
     }
   end
 
@@ -39,7 +39,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_file_with_extension(".blah") 
     When render_file_url_code_block
     Then {
-      assert_equal %{<pre><code>#{@code}</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code>#{@code}</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
     }
   end
 
@@ -47,7 +47,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_file_with_extension(".blah") 
     When render_file_url_code_block(languages: { '.blah' => 'blahscript' })
     Then {
-      assert_equal %{<pre><code class="language-blahscript">#{@code}</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="language-blahscript">#{@code}</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
     }
   end
 
@@ -55,7 +55,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_file_with_extension(".scala") 
     When render_file_url_code_block
     Then {
-      assert_equal %{<pre><code class="language-scala">#{@code}</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="language-scala">#{@code}</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
     }
   end
 
@@ -70,14 +70,14 @@ class RendererTest < Test::Unit::TestCase
 })
     When render_file_url_code_block
     Then {
-      assert_equal %{<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+      assert_equal %{<article class='code-listing'><pre><code class="language-html">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
   &lt;body&gt;
     &lt;h1&gt;HELLO!&lt;/h1&gt;
     &lt;h2&gt;&amp;amp; Goodbye&lt;/h2&gt;
   &lt;/body&gt;
 &lt;/html&gt;
-</code></pre>},@html
+</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
     }
   end
 
@@ -102,7 +102,7 @@ class RendererTest < Test::Unit::TestCase
     }
     Then {
       @parsed_versions.each do |sha1,code|
-        assert_equal %{<pre><code class="language-ruby">#{@versions[sha1]}\n</code></pre>},code,"For SHA: #{sha1}"
+        assert_equal %{<article class='code-listing'><pre><code class="language-ruby">#{@versions[sha1]}\n</code></pre><footer><h1>foo.rb</h1></footer></article>},code,"For SHA: #{sha1}"
       end
     }
   end
@@ -116,7 +116,7 @@ class RendererTest < Test::Unit::TestCase
     }
     Then {
       @parsed_versions.each do |tagname,code|
-        assert_equal %{<pre><code class="language-ruby">#{@versions[tagname]}\n</code></pre>},code,"For Tag: #{tagname}"
+        assert_equal %{<article class='code-listing'><pre><code class="language-ruby">#{@versions[tagname]}\n</code></pre><footer><h1>foo.rb</h1></footer></article>},code,"For Tag: #{tagname}"
       end
     }
   end
@@ -128,7 +128,7 @@ class RendererTest < Test::Unit::TestCase
       @html = renderer.block_code(url,nil)
     }
     Then {
-      assert_match /<pre><code class=\"language-diff\">diff --git/,@html
+      assert_match /<article class=\'code-listing\'><pre><code class=\"language-diff\">diff --git/,@html
       assert_match /a\/foo.rb b\/foo.rb/,@html
       assert_match /index [a-z0-9]+..[a-z0-9]+ 100644/,@html
       assert_match /\-\-\- a\/foo.rb/,@html
@@ -143,7 +143,7 @@ class RendererTest < Test::Unit::TestCase
       @html = renderer.block_code(url,nil)
     }
     Then {
-      assert_match /<pre><code class=\"language-diff\">diff --git/,@html
+      assert_match /<article class=\'code-listing\'><pre><code class=\"language-diff\">diff --git/,@html
       assert_match /a\/foo.rb b\/foo.rb/,@html
       assert_match /index [a-z0-9]+..[a-z0-9]+ 100644/,@html
       assert_match /\-\-\- a\/foo.rb/,@html
@@ -159,7 +159,7 @@ class RendererTest < Test::Unit::TestCase
       @html = renderer.block_code("#{git_url}##{@version}!cat foo.rb",nil)
     }
     Then {
-      assert_equal %{<pre><code class="language-shell">&gt; cat foo.rb\n#{@versions[@version]}\n</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="language-shell">&gt; cat foo.rb\n#{@versions[@version]}\n</code></pre></article>},@html
     }
   end
 
@@ -178,11 +178,11 @@ class RendererTest < Test::Unit::TestCase
       @html = renderer.block_code("sh://play#ls -1",nil)
     }
     Then {
-      assert_equal %{<pre><code class="language-shell">&gt; ls -1
+      assert_equal %{<article class='code-listing'><pre><code class="language-shell">&gt; ls -1
 bar
 blah
 quux
-</code></pre>},@html
+</code></pre></article>},@html
     }
   end
 
@@ -191,7 +191,7 @@ quux
       @html = renderer.block_code("class Foo", 'coffeescript')
     }
     Then {
-      assert_equal %{<pre><code class="language-coffeescript">class Foo</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="language-coffeescript">class Foo</code></pre></article>},@html
     }
   end
 
@@ -200,7 +200,7 @@ quux
       @html = renderer.block_code("class Foo", nil)
     }
     Then {
-      assert_equal %{<pre><code>class Foo</code></pre>},@html
+      assert_equal %{<article class='code-listing'><pre><code>class Foo</code></pre></article>},@html
     }
   end
 
@@ -313,6 +313,7 @@ end}
     -> {
       file = Tempfile.new(['foo',extension])
       @path = file.path
+      @relative_path = @path.gsub(Regexp.escape(@tempdir),'')
       @code = contents
       File.open(@path,'w') do |file|
         file.puts @code

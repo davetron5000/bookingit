@@ -163,15 +163,18 @@ module Bookingit
 
     def block_code(code, language)
       result = nil
+      filename = nil
       chdir @basedir do
         Code.new(code).when_file { |path|
 
+          filename = path
           code = File.read(path)
           language = identify_language(path)
 
         }.when_git_diff { |path_in_repo,reference|
 
           puts "Calculating git diff #{reference}"
+          filename = path_in_repo
           code = `git diff #{reference} #{path_in_repo}`
           language = 'diff'
 
@@ -185,6 +188,7 @@ module Bookingit
         }.when_file_in_git { |path_in_repo,reference|
 
           puts "Getting file at #{reference}"
+          filename = path_in_repo
           at_version_in_git(reference) do
             code = File.read(path_in_repo)
           end
@@ -201,7 +205,12 @@ module Bookingit
                     else
                       " class=\"language-#{language}\""
                     end
-        result = %{<pre><code#{css_class}>#{CGI.escapeHTML(code)}</code></pre>}
+        filename_footer = if filename
+                            %{<footer><h1>#{filename}</h1></footer>}
+                          else
+                            ''
+                          end
+        result = %{<article class='code-listing'><pre><code#{css_class}>#{CGI.escapeHTML(code)}</code></pre>#{filename_footer}</article>}
       end
       result
     end
