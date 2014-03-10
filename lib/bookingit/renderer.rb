@@ -24,6 +24,7 @@ module Bookingit
       @basedir = String(options[:basedir]).strip
       @basedir = '.' if @basedir == ''
       @stylesheets = Array(options[:stylesheets])
+      @theme = options[:theme] || "default"
     end
 
     attr_accessor :headers
@@ -33,18 +34,26 @@ module Bookingit
       "<h#{header_level}>#{text}</h#{header_level}>"
     end
 
-    def doc_header
-      @headers = {}
-      header = %{<!DOCTYPE html>
+    def header_text
+      %{<!DOCTYPE html>
 <html>
-<head>} + @stylesheets.map { |stylesheet|
+<head>
+} + @stylesheets.map { |stylesheet|
         "  <link href='#{stylesheet}' rel='stylesheet' type='text/css' media='all'>"
       }.join("\n") + %{
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
   <meta charset="utf-8">
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/styles/#{@theme}.min.css">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
 </head>
 <body>
       }
+    end
+
+    def doc_header
+      @headers = {}
+      header_text
     end
 
     def doc_footer
@@ -97,7 +106,7 @@ module Bookingit
 
       def when_file_in_git(&block)
         when_git_reference do |repo_path,path_in_repo,reference|
-          if reference !~ /^(.+)\.\.(.+)$/ && reference !~ /^(.+)\!(.+)$/
+          if reference !~ /^(.+)\.\.(.+)$/ && reference !~ /^(.+)\!(.+)$/ && reference !~ /^\.\.(.+)$/
             @ran = true
             chdir repo_path do
               block.call(path_in_repo,reference)
@@ -113,6 +122,12 @@ module Bookingit
             @ran = true
             chdir repo_path do
               block.call(path_in_repo,reference)
+            end
+          elsif reference =~ /^\.\.(.+)$/
+            @ran = true
+            tag_or_sha = $1
+            chdir repo_path do
+              block.call(path_in_repo,"#{tag_or_sha}^..#{tag_or_sha}")
             end
           end
         end
@@ -156,17 +171,20 @@ module Bookingit
 
         }.when_git_diff { |path_in_repo,reference|
 
+          puts "Calculating git diff #{reference}"
           code = `git diff #{reference} #{path_in_repo}`
           language = 'diff'
 
         }.when_shell_command_in_git { |path_in_repo,reference,command|
 
+          puts "Running #{command}"
           at_version_in_git(reference) do
             code,language = capture_command_output(path_in_repo,command)
           end
 
         }.when_file_in_git { |path_in_repo,reference|
 
+          puts "Getting file at #{reference}"
           at_version_in_git(reference) do
             code = File.read(path_in_repo)
           end
@@ -174,6 +192,7 @@ module Bookingit
 
         }.when_shell_command { |path,command|
 
+          puts "Running #{command}"
           code,language = capture_command_output(path,command)
 
         }

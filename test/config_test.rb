@@ -114,6 +114,7 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
             "/^Bowerfile$/" => "ruby",
           },
           git_repos_basedir: "/tmp",
+          syntax_theme: "solarized",
         }
       }
     }
@@ -124,6 +125,7 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
       assert_equal "/tmp",@normalized_config.rendering_config[:basedir]
       assert_equal({ ".coffee" => "coffeescript", /^Bowerfile$/ => "ruby" },@normalized_config.rendering_config[:languages])
       assert_equal ['blah.css'],@normalized_config.rendering_config[:stylesheets]
+      assert_equal 'solarized',@normalized_config.rendering_config[:theme]
     }
   end
 

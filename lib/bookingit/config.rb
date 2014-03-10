@@ -33,6 +33,7 @@ module Bookingit
           [match,language]
         end
       }]
+      rendering_config[:theme] = raw_config['syntax_theme']
 
       rendering_config
     end

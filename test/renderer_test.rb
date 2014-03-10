@@ -136,6 +136,21 @@ class RendererTest < Test::Unit::TestCase
     }
   end
 
+  test_that "a git url with a compact diff spec shows the diff, too" do
+    Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
+    When {
+      url = @file_git_url + "#.." + @versions.keys[1]
+      @html = renderer.block_code(url,nil)
+    }
+    Then {
+      assert_match /<pre><code class=\"language-diff\">diff --git/,@html
+      assert_match /a\/foo.rb b\/foo.rb/,@html
+      assert_match /index [a-z0-9]+..[a-z0-9]+ 100644/,@html
+      assert_match /\-\-\- a\/foo.rb/,@html
+      assert_match /\+\+\+ b\/foo.rb/,@html
+    }
+  end
+
   test_that "a git url with a shell command runs that command on that version of the repo" do
     Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
     When {

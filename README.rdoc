@@ -57,6 +57,7 @@ Here is what is currently supported:
 
 * <code>git://some_repo.git/path/in/repo.rb#sha1_or_tag</code> - show the contents of the file from the git repo at the given version (either SHA1 or tag)
 * <code>git://some_repo.git/path/in/repo.rb#sha1_or_tag..other_sha1_or_tag</code> - show a diff of the contents of the file between the two versions.
+* <code>git://some_repo.git/path/in/repo.rb#..other_sha1_or_tag</code> - shortcut for showing a diff between the given SHA1 or tag and the previous revision.
 * <code>git://some_repo.git/#sha1_or_tag!rake test</code> - check out the repo at the given SHA1 or tag, then run the command after the bang, and include the output of that command in the text
 * <code>sh:///some/filesystem/path#ls -l</code> - cd to the given path, run the command, and include its output in the text.
 

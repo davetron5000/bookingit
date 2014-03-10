@@ -56,17 +56,7 @@ command :build do |c|
       cp stylesheet, output_dir
     end
     File.open(File.join(output_dir,'index.html'),'w') do |index|
-      index.puts %{<!DOCTYPE html>
-<html>
-<head>
-        }
-      config.rendering_config[:stylesheets].each do |stylesheet|
-        index.puts "<link href='#{stylesheet}' rel='stylesheet' type='text/css' media='all'>"
-      end
-      index.puts %{
-</head>
-<body>
-}
+      index.puts renderer.header_text
       index.puts "<ol>"
       %w(front_matter main_matter back_matter).each do |matter|
         index.puts "<li>#{matter}<ol>"
@@ -94,11 +84,7 @@ command :build do |c|
         index.puts "</ol></li>"
       end
       index.puts "</ol>"
-      index.puts %{
-
-</body>
-</html>
-}
+      index.puts renderer.doc_footer
     end
   end
 end
