@@ -101,3 +101,29 @@ p, td, li {
     When I run `bookingit init`
     Then a file named "config.json" should exist
 
+  Scenario: Passes through stderr/stdout of failing commands
+    Given the file "intro.md" contains:
+    """
+```
+sh:///# ls bleorgh
+```
+    """
+    And this config file:
+    """
+{
+  "front_matter": [
+    "intro.md"
+  ],
+  "main_matter": [
+    "intro.md"
+  ],
+  "back_matter": [
+    "intro.md"
+  ]
+}
+    """
+    When I run `bookingit build`
+    Then the exit status should not be 0
+    And the stderr should contain "ls bleorgh"
+    And the stderr should contain "stdout:"
+    And the stderr should contain "stderr:"

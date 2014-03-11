@@ -163,6 +163,32 @@ class RendererTest < Test::Unit::TestCase
     }
   end
 
+  test_that "a git url with a shell command that exits nonzero raises an error" do
+    Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
+    When {
+      @version = @versions.keys[0]
+      git_url = @file_git_url.gsub(/\/foo.rb/,'/')
+      @executable = -> {
+        renderer.block_code("#{git_url}##{@version}!cat blah.rb",nil)
+      }
+    }
+    Then {
+      assert_raise Bookingit::UnexpectedShellCommandExit,&@executable
+    }
+  end
+
+  test_that "a git url with a shell command that exits nonzero doesn't raise an error if we indicate as such" do
+    Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
+    When {
+      @version = @versions.keys[0]
+      git_url = @file_git_url.gsub(/\/foo.rb/,'/')
+      @html = renderer.block_code("#{git_url}##{@version}!cat blah.rb!nonzero",nil)
+    }
+    Then {
+      refute_nil @html
+    }
+  end
+
   test_that "an sh url will run the given command and put the contents into the output" do
     Given {
       chdir @tempdir do
@@ -183,6 +209,44 @@ bar
 blah
 quux
 </code></pre></article>},@html
+    }
+  end
+
+  test_that "an sh url that exits nonzero will raise" do
+    Given {
+      chdir @tempdir do
+        mkdir "play"
+        chdir "play" do
+          system "touch blah"
+          system "touch bar"
+          system "touch quux"
+        end
+      end
+    }
+    When {
+      @executable = -> { renderer.block_code("sh://play#cat bleorgh",nil) }
+    }
+    Then {
+      assert_raise Bookingit::UnexpectedShellCommandExit, &@executable
+    }
+  end
+
+  test_that "an sh url that exits nonzero but we expect it to will not raise" do
+    Given {
+      chdir @tempdir do
+        mkdir "play"
+        chdir "play" do
+          system "touch blah"
+          system "touch bar"
+          system "touch quux"
+        end
+      end
+    }
+    When {
+      @html = renderer.block_code("sh://play#cat bleorgh!nonzero",nil)
+    }
+    Then {
+      refute_nil @html
     }
   end
 

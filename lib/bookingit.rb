@@ -1,3 +1,6 @@
 require 'bookingit/version.rb'
+require 'bookingit/errors.rb'
+require 'bookingit/code_block_interpreter.rb'
+require 'bookingit/shell_command.rb'
 require 'bookingit/renderer.rb'
 require 'bookingit/config.rb'

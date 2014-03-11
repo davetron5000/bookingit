@@ -97,7 +97,17 @@ post do |global,command,options,args|
 end
 
 on_error do |exception|
-  true
+  case exception
+  when Bookingit::UnexpectedShellCommandExit
+    $stderr.puts "'#{exception.command}' exited in an unexpected way with exit status #{exception.exit_code}"
+    $stderr.puts "stdout:"
+    $stderr.puts exception.stdout
+    $stderr.puts "stderr:"
+    $stderr.puts exception.stderr
+    false
+  else
+    true
+  end
 end
 
 exit run(ARGV)
