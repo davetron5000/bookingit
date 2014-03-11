@@ -63,6 +63,8 @@ Here is what is currently supported:
 
 The paths used can be relative (e.g. <code>git://some_repo.git</code>) or absolute (e.g. <code>git:///some/other/repo.git</code>).  Relative paths are relative to the directory where ran +bookingit+.  You can change where the git repos are located by setting +git_repos_basedir+ in your config (see below).
 
+For URLs that contain shell commands, +bookingit+ will fail if the shell command fails, because the assumption is that your embedded commands are expected to succeed (exit 0).  If you need to run a shell command that is expected to fail (e.g. demonstrate a failing test case), append <code>!nonzero</code> to the URL, e.g. <code>git://some_repo.git/!rake test!nonzero</code>.  In this form, +bookingit+ will fail if the command _succeeds_.
+
 === Configuration
 
 The book's configuration is driven by +config.json+, which looks like so:
