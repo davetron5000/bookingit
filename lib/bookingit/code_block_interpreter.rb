@@ -2,30 +2,13 @@ module Bookingit
   class CodeBlockInterpreter
     def initialize(code)
       @code = code.strip
-      @ran = false
+      @result = nil
     end
 
     def when_file(&block)
       if @code =~ /^\s*file:\/\/(.*)$/
-        @ran = true
         path = $1
-        block.call(path)
-      end
-      self
-    end
-
-    def when_git_reference(&block)
-      if @code =~ /^\s*git:\/\/(.*)$/
-        path = $1
-        if path =~ /(^.*).git\/(.*)#([^#]+)$/
-          repo_path = $1
-          path_in_repo = $2
-          path_in_repo = '.' if String(path_in_repo).strip == ''
-          reference = $3
-          block.call(repo_path,path_in_repo,reference)
-        else
-          raise "You must provide a SHA1 or tagname: #{path}"
-        end
+        @result = block.call(path)
       end
       self
     end
@@ -33,9 +16,8 @@ module Bookingit
     def when_file_in_git(&block)
       when_git_reference do |repo_path,path_in_repo,reference|
         if reference !~ /^(.+)\.\.(.+)$/ && reference !~ /^(.+)\!(.+)$/ && reference !~ /^\.\.(.+)$/
-          @ran = true
           chdir repo_path do
-            block.call(path_in_repo,reference)
+            @result = block.call(path_in_repo,reference)
           end
         end
       end
@@ -45,15 +27,13 @@ module Bookingit
     def when_git_diff(&block)
       when_git_reference do |repo_path,path_in_repo,reference|
         if reference =~ /^(.+)\.\.(.+)$/
-          @ran = true
           chdir repo_path do
-            block.call(path_in_repo,reference)
+            @result = block.call(path_in_repo,reference)
           end
         elsif reference =~ /^\.\.(.+)$/
-          @ran = true
           tag_or_sha = $1
           chdir repo_path do
-            block.call(path_in_repo,"#{tag_or_sha}^..#{tag_or_sha}")
+            @result = block.call(path_in_repo,"#{tag_or_sha}^..#{tag_or_sha}")
           end
         end
       end
@@ -65,9 +45,8 @@ module Bookingit
         if reference =~ /^([^!]+)\!(.+)$/
           reference = $1
           command,exit_type  = parse_shell_command($2)
-          @ran = true
           chdir repo_path do
-            block.call(reference,shell_command(path: path_in_repo,command: command, exit_type: exit_type))
+            @result = block.call(reference,shell_command(path: path_in_repo,command: command, exit_type: exit_type))
           end
         end
       end
@@ -75,17 +54,22 @@ module Bookingit
 
     def when_shell_command(&block)
       if @code.strip =~ /^\s*sh:\/\/(.+)#([^#]+)$/
-        @ran = true
         path = $1
         command,exit_type = parse_shell_command($2)
-        block.call(shell_command(path: path,command: command, exit_type: exit_type))
+        @result = block.call(shell_command(path: path,command: command, exit_type: exit_type))
       end
+      self
     end
 
     def otherwise(&block)
-      block.call unless @ran
+      @result = block.call if @result.nil?
+      self
     end
 
+    def result
+      raise "You didn't handle every possible case" if @result.nil?
+      @result
+    end
 
   private
 
@@ -109,5 +93,22 @@ module Bookingit
         [shell_command,:zero]
       end
     end
+
+    def when_git_reference(&block)
+      if @code =~ /^\s*git:\/\/(.*)$/
+        path = $1
+        if path =~ /(^.*).git\/(.*)#([^#]+)$/
+          repo_path = $1
+          path_in_repo = $2
+          path_in_repo = '.' if String(path_in_repo).strip == ''
+          reference = $3
+          block.call(repo_path,path_in_repo,reference)
+        else
+          raise "You must provide a SHA1 or tagname: #{path}"
+        end
+      end
+      self
+    end
+
   end
 end

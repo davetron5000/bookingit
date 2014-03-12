@@ -21,10 +21,11 @@ module Bookingit
         end
       }]
       @language_identifiers = EXTENSION_TO_LANGUAGE.merge(additional_languages)
-      @basedir = String(options[:basedir]).strip
-      @basedir = '.' if @basedir == ''
-      @stylesheets = Array(options[:stylesheets])
-      @theme = options[:theme] || "default"
+      @basedir              = String(options[:basedir]).strip
+      @basedir              = '.' if @basedir == ''
+      @stylesheets          = Array(options[:stylesheets])
+      @theme                = options[:theme] || "default"
+      @cachedir             = options[:cacher]
     end
 
     attr_accessor :headers
@@ -78,51 +79,17 @@ module Bookingit
       result = nil
       filename = nil
       chdir @basedir do
-        CodeBlockInterpreter.new(code).when_file { |path|
+        code,language,filename = CodeBlockInterpreter.new(code)
+        .when_file(                &method(:read_file))
+        .when_git_diff(            &method(:read_git_diff))
+        .when_shell_command_in_git(&method(:run_shell_command_in_git))
+        .when_file_in_git(         &method(:read_file_in_git))
+        .when_shell_command(       &method(:run_shell_command))
+        .otherwise {
+          [code,language,nil]
+        }.result
 
-          filename = path
-          code = File.read(path)
-          language = identify_language(path)
-
-        }.when_git_diff { |path_in_repo,reference|
-
-          puts "Calculating git diff #{reference}"
-          filename = path_in_repo
-          code = `git diff #{reference} #{path_in_repo}`
-          language = 'diff'
-
-        }.when_shell_command_in_git { |reference,shell_command|
-          at_version_in_git(reference) do
-            shell_command.run!
-            code = "> #{shell_command.command}\n#{shell_command.stdout}"
-            language = 'shell'
-          end
-
-        }.when_file_in_git { |path_in_repo,reference|
-
-          puts "Getting file at #{reference}"
-          filename = path_in_repo
-          at_version_in_git(reference) do
-            code = File.read(path_in_repo)
-          end
-          language = identify_language(path_in_repo)
-
-        }.when_shell_command { |shell_command|
-          shell_command.run!
-          code = "> #{shell_command.command}\n#{shell_command.stdout}"
-          language = 'shell'
-        }
-        css_class = if language.nil? || language.strip == ''
-                      ""
-                    else
-                      " class=\"language-#{language}\""
-                    end
-        filename_footer = if filename
-                            %{<footer><h1>#{filename}</h1></footer>}
-                          else
-                            ''
-                          end
-        result = %{<article class='code-listing'><pre><code#{css_class}>#{CGI.escapeHTML(code)}</code></pre>#{filename_footer}</article>}
+        result = %{<article class='code-listing'><pre><code#{css_class(language)}>#{CGI.escapeHTML(code)}</code></pre>#{filename_footer(filename)}</article>}
       end
       result
     end
@@ -130,9 +97,9 @@ module Bookingit
   private
 
     def at_version_in_git(reference,&block)
-      `git checkout #{reference} 2>&1`
+      ShellCommand.new(command: "git checkout #{reference} 2>&1").run!
       block.call
-      `git checkout master 2>&1`
+      ShellCommand.new(command: "git checkout master 2>&1").run!
     end
 
     def capture_command_output(path,command,exit_type=:zero)
@@ -148,6 +115,59 @@ module Bookingit
       end
       shell_command.run!
       ["> #{command}\n#{shell_command.stdout}",'shell']
+    end
+
+    def read_file(path)
+      filename = path
+      [File.read(path),identify_language(path),filename]
+    end
+
+    def read_git_diff(path_in_repo,reference)
+      puts "Calculating git diff #{reference}"
+      filename = path_in_repo
+      shell_command = ShellCommand.new(command: "git diff #{reference} #{path_in_repo}")
+      shell_command.run!
+      [ shell_command.stdout, 'diff', filename ]
+    end
+
+    def run_shell_command_in_git(reference,shell_command)
+      code = nil
+      at_version_in_git(reference) do
+        shell_command.run!
+        code = "> #{shell_command.command}\n#{shell_command.stdout}"
+      end
+      [code,'shell']
+    end
+
+    def read_file_in_git(path_in_repo,reference)
+      puts "Getting file at #{reference}"
+      code = nil
+      filename = path_in_repo
+      at_version_in_git(reference) do
+        code = File.read(path_in_repo)
+      end
+      [code, identify_language(path_in_repo),filename]
+    end
+
+    def run_shell_command(shell_command)
+      shell_command.run!
+      ["> #{shell_command.command}\n#{shell_command.stdout}",'shell']
+    end
+
+    def css_class(language)
+      if language.nil? || language.strip == ''
+        ""
+      else
+        " class=\"language-#{language}\""
+      end
+    end
+
+    def filename_footer(filename)
+      if filename
+        %{<footer><h1>#{filename}</h1></footer>}
+      else
+        ''
+      end
     end
   end
 end

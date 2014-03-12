@@ -1,6 +1,7 @@
 require 'test/unit'
 require 'clean_test/test_case'
 require 'bookingit'
+require "mocha/test_unit"
 
 # Add test libraries you want to use here, e.g. mocha
 
