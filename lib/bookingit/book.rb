@@ -1,3 +1,6 @@
+require 'mustache'
+require 'ostruct'
+
 module Bookingit
   class Book
     def initialize(config)
@@ -42,19 +45,20 @@ module Bookingit
       toc
     end
 
+    def structify
+      -> (matter) {
+        OpenStruct.new(href: matter[0], title: matter[1])
+      }
+    end
+
     def generate_toc(toc,renderer)
-      File.open(File.join(@output_dir,"index.html"),'w') do |index|
-        index.puts renderer.header_text
-        index.puts "<ol>"
-        %w(front_matter main_matter back_matter).each do |matter|
-          index.puts "<li>#{matter}<ol>"
-          toc[matter].each do |(output_file,title)|
-            index.puts "<li><a href='#{output_file}'>#{title}</a></li>"
-          end
-          index.puts "</ol></li>"
-        end
-        index.puts "</ol>"
-        index.puts renderer.doc_footer
+      view = IndexView.new(renderer.header_text,
+                           renderer.doc_footer,
+                           toc['front_matter'].map(&structify),
+                           toc['main_matter'].map(&structify),
+                           toc['back_matter'].map(&structify))
+      File.open(File.join(@output_dir,'index.html'),'w') do |index|
+        index.puts view.render
       end
     end
 
@@ -64,6 +68,20 @@ module Bookingit
 
       @config.rendering_config[:stylesheets].each do |stylesheet|
         cp stylesheet, @output_dir
+      end
+    end
+
+    class IndexView < Mustache
+      self.template_path = File.expand_path(File.join(File.dirname(__FILE__),'..','..','templates'))
+      self.template_name = 'index.html'
+
+      attr_reader :header, :footer, :front_matter, :main_matter, :back_matter
+      def initialize(header,footer,front_matter,main_matter,back_matter)
+        @header = header
+        @footer = footer
+        @front_matter = front_matter
+        @main_matter = main_matter
+        @back_matter = back_matter
       end
     end
   end

@@ -3,6 +3,7 @@ PATH
   specs:
     bookingit (0.0.1)
       gli
+      mustache
       redcarpet
 
 GEM
@@ -37,6 +38,7 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.8.4)
     multi_test (0.0.3)
+    mustache (0.99.5)
     rake (10.1.1)
     rdoc (4.1.1)
       json (~> 1.4)

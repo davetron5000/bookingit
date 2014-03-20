@@ -3,6 +3,7 @@ Feature: App does what it's supposed to do
   I want to use bookingit to translate markdown
   and all that
 
+  @announce
   Scenario: App works
     Given the file "intro.md" contains:
     """
