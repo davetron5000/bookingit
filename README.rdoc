@@ -75,7 +75,7 @@ The book's configuration is driven by +config.json+, which looks like so:
       ],
       "main_matter": [
         "chapter1.md",
-        "chapter2.*.md"
+        "chapter2.md"
       ],
       "back_matter": [
         "appendix.md"
@@ -90,31 +90,21 @@ The book's configuration is driven by +config.json+, which looks like so:
       }
     }
 
-The book's contents are described in +front_matter+, +main_matter+, and +back_matter+.  The values of these can either be a single markdown file, an array of files, or a glob pattern.  The +main_matter+ entries can themselves be arrays or globs.  For example, if you have a four chapter book, but chapter 3 is spread across several files:
+The book's contents are described in +front_matter+, +main_matter+, and +back_matter+.  The values of these can be a single file or an array of files.  The likely pattern is that you would have a single entry for +front_matter+, an array in +main_matter+ for each chapter, and an optional +back_matter+ for things like appendeces or a colophon.
+
+Example:
 
     {
       "front_matter": "intro.md"
       "main_matter": [
         "chapter1.md",
         "chapter2.md",
-        "chapter3_*.md",
+        "chapter3.md",
         "chapter4.md"
       ],
       "back_matter": "appendix.md"
     }
 
-You could name them explicitly, too:
-
-    {
-      "front_matter": "intro.md"
-      "main_matter": [
-        "chapter1.md",
-        "chapter2.md",
-        ["chapter3_1.md", "chapter3_2.md" ],
-        "chapter4.md"
-      ],
-      "back_matter": "appendix.md"
-    }
 
 The +rendering+ section allows some control over the rendering process.  It supports three keys:
 
