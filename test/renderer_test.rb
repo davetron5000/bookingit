@@ -8,6 +8,8 @@ class RendererTest < Test::Unit::TestCase
 
   def setup
     @tempdir = Dir.mktmpdir
+    $foo = false
+    $bar = false
   end
 
   def teardown
@@ -268,16 +270,18 @@ quux
     }
   end
 
-  someday_test_that "we can cache results between calls" do
+  test_that "we can cache results between calls" do
     Given a_git_repo_with_two_tagged_verions_of_file("foo.rb")
     And {
-      @cacehdir = File.join(@tempdir,'cache')
+      $foo = true
+      @cachedir = File.join(@tempdir,'cache')
       @renderer = renderer(cache: @cachedir)
       @version  = @versions.keys[0]
       @url      = "#{@file_git_url.gsub(/\/foo.rb/,'/')}##{@version}!cat foo.rb"
       @html     = @renderer.block_code(@url,nil)
     }
     When {
+      $bar = true
       @html2 = @renderer.block_code(@url,nil)
     }
     Then {

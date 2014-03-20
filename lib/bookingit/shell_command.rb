@@ -5,7 +5,7 @@ module Bookingit
   class ShellCommand
     include FileUtils
 
-    attr_reader :stdout, :stderr, :exit_code, :command
+    attr_reader :stdout, :stderr, :exit_code, :command, :expected_exit_status
 
     def initialize(command: nil,path: '.',expected_exit_status: 0, &block)
       @command = command

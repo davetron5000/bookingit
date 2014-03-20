@@ -25,7 +25,7 @@ module Bookingit
       @basedir              = '.' if @basedir == ''
       @stylesheets          = Array(options[:stylesheets])
       @theme                = options[:theme] || "default"
-      @cachedir             = options[:cacher]
+      @cachedir             = options[:cache]
     end
 
     attr_accessor :headers
@@ -80,11 +80,11 @@ module Bookingit
       filename = nil
       chdir @basedir do
         code,language,filename = CodeBlockInterpreter.new(code)
-        .when_file(                &method(:read_file))
-        .when_git_diff(            &method(:read_git_diff))
-        .when_shell_command_in_git(&method(:run_shell_command_in_git))
-        .when_file_in_git(         &method(:read_file_in_git))
-        .when_shell_command(       &method(:run_shell_command))
+        .when_file(                &cache(:read_file))
+        .when_git_diff(            &cache(:read_git_diff))
+        .when_shell_command_in_git(&cache(:run_shell_command_in_git))
+        .when_file_in_git(         &cache(:read_file_in_git))
+        .when_shell_command(       &cache(:run_shell_command))
         .otherwise {
           [code,language,nil]
         }.result
@@ -95,6 +95,42 @@ module Bookingit
     end
 
   private
+
+    def cache(method_name)
+      ->(*args) {
+        if @cachedir && File.exist?(cached_filename(*args))
+          puts "Pulling from cache..."
+          lines = File.read(cached_filename(*args)).split(/\n/)
+          language = lines.shift
+          filename = lines.shift
+          [lines.join("\n") + "\n",language,filename]
+        else
+          code,language,filename = method(method_name).(*args)
+          if @cachedir
+            FileUtils.mkdir_p(@cachedir) unless File.exist?(@cachedir)
+            File.open(cached_filename(*args),'w') do |file|
+              file.puts language
+              file.puts filename
+              file.puts code
+            end
+            puts "Cached output"
+          end
+          [code,language,filename]
+        end
+      }
+    end
+
+    def cached_filename(*args)
+      args = args.map { |arg|
+        case arg
+        when ShellCommand
+          [arg.command,arg.expected_exit_status].join("_")
+        else
+          arg
+        end
+      }
+      File.join(@cachedir,args.join('__').gsub(/[#\/\!\s><]/,'_'))
+    end
 
     def at_version_in_git(reference,&block)
       ShellCommand.new(command: "git checkout #{reference} 2>&1").run!
@@ -163,7 +199,7 @@ module Bookingit
     end
 
     def filename_footer(filename)
-      if filename
+      if filename && filename.strip != ''
         %{<footer><h1>#{filename}</h1></footer>}
       else
         ''
