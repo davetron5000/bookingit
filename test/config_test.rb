@@ -79,6 +79,25 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
       assert_equal({ ".coffee" => "coffeescript", /^Bowerfile$/ => "ruby" },@normalized_config.rendering_config[:languages])
       assert_equal ['blah.css'],@normalized_config.rendering_config[:stylesheets]
       assert_equal 'solarized',@normalized_config.rendering_config[:theme]
+      refute @normalized_config.cache
+    }
+  end
+
+  test_that "we can mutate the config" do
+    Given {
+      @config = {
+        rendering: {
+          stylesheets: 'blah.css',
+          syntax_theme: "solarized",
+        }
+      }
+    }
+    When {
+      @normalized_config = Bookingit::Config.new(@config.to_json,@tempdir)
+      @normalized_config.cache = true
+    }
+    Then  {
+      assert @normalized_config.cache
     }
   end
 

@@ -44,7 +44,8 @@ command :build do |c|
   c.switch :cache
   c.action do |global_options,options,args|
     config = Bookingit::Config.new(File.read('config.json'),File.expand_path('.'))
-    book = Bookingit::Book.new(config,options[:cache])
+    config.cache = options[:cache]
+    book = Bookingit::Book.new(config)
     book.render_html!
   end
 end

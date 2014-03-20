@@ -109,5 +109,6 @@ Example:
 The +rendering+ section allows some control over the rendering process.  It supports three keys:
 
 +git_repos_basedir+:: path to where your git repos are, for bringing in code.  For example, if you specify the value "./repos", then a url like <code>git://my_repo.git/foo/bar.rb#version-1</code> would look in <code>./repos/my_repo/foo/bar.rb</code> for the file contents.  This path should be relative to where you run +bookingit+.
-+stylesheets+:: An array of stylesheets that will be copied and linked to each HTML page
 +languages+:: A map of file extensions or regexps to language names for syntax detection.  If the key starts and ends with a +/+, it will be interpreted as a regexp, otherwise as a file extension
++stylesheets+:: An array of stylesheets that will be copied and linked to each HTML page
++syntax_theme+:: A highlight.js name for the syntax highlighting theme to use.

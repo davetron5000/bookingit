@@ -1,8 +1,7 @@
 module Bookingit
   class Book
-    def initialize(config,cache)
+    def initialize(config)
       @config = config
-      @cache = cache
     end
 
     def render_html!
@@ -10,7 +9,7 @@ module Bookingit
       mkdir output_dir unless Dir.exists?(output_dir)
 
       rendering_config = @config.rendering_config
-      rendering_config[:cache] = File.expand_path('cache') if @cache
+      rendering_config[:cache] = File.expand_path('cache') if @config.cache
       renderer = Bookingit::Renderer.new(@config.rendering_config)
       redcarpet = Redcarpet::Markdown.new(renderer, no_intra_emphasis: true,
                                           tables: true,

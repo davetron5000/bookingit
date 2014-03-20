@@ -8,15 +8,21 @@ module Bookingit
     attr_reader :front_matter,
                 :main_matter,
                 :back_matter,
-                :rendering_config
+                :rendering_config,
+                :cache
 
     def initialize(config_json,root_dir)
       config_hash = JSON.parse(config_json)
 
-      @front_matter = Matter.new(config_hash['front_matter'],root_dir)
-      @main_matter  = Matter.new(config_hash['main_matter'],root_dir)
-      @back_matter  = Matter.new(config_hash['back_matter'],root_dir)
+      @front_matter     = Matter.new(config_hash['front_matter'],root_dir)
+      @main_matter      = Matter.new(config_hash['main_matter'],root_dir)
+      @back_matter      = Matter.new(config_hash['back_matter'],root_dir)
       @rendering_config = create_rendering_config(config_hash['rendering'])
+      @cache            = false
+    end
+
+    def cache=(cache)
+      @cache = cache
     end
 
   private
