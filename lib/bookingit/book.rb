@@ -35,12 +35,7 @@ module Bookingit
           File.open(File.join(@output_dir,output_file),'w') do |file|
             file.puts redcarpet.render(contents)
           end
-          title = (Array(renderer.headers[1]) +
-                   Array(renderer.headers[2]) +
-                   Array(renderer.headers[3]) +
-                   Array(renderer.headers[4]) +
-                   Array(renderer.headers[5]) +
-                   Array(renderer.headers[6])).first
+          title = Array(renderer.headers[1]).first
           toc[matter] << [output_file,title]
         end
       end
