@@ -28,13 +28,7 @@ module Bookingit
         %w(front_matter main_matter back_matter).each do |matter|
           index.puts "<li>#{matter}<ol>"
           @config.send(matter).chapters.each_with_index do |chapter,i|
-            contents = if chapter.path.nil?
-                         chapter.sections.map(&:path).map { |path|
-                           File.read(path)
-                         }.join("\n")
-                       else
-                         File.read(chapter.path)
-                       end
+            contents = File.read(chapter)
 
             output_file = "#{matter}_#{i+1}.html"
             File.open(File.join(output_dir,output_file),'w') do |file|

@@ -27,7 +27,7 @@ And then
 git://foobar.git/blah.rb#some-tag
 ```
     """
-    And the file "chapter2.1.md" contains:
+    And the file "chapter2.md" contains:
     """
 # The continuation
 
@@ -37,7 +37,7 @@ This is how we work
 
 Some more stuff
     """
-    And the file "chapter2.2.md" contains:
+    And the file "chapter3.md" contains:
     """
 ## Some other section
 
@@ -63,7 +63,8 @@ p, td, li {
   ],
   "main_matter": [
     "chapter1.md",
-    "chapter2.*.md"
+    "chapter2.md",
+    "chapter3.md"
   ],
   "back_matter": [
     "appendix.md"
@@ -83,8 +84,8 @@ p, td, li {
     And the file "book/main_matter_1.html" should contain "styles.css"
     And the file "book/main_matter_1.html" should contain "ls"
     And the file "book/main_matter_2.html" should contain "This is how we work"
-    And the file "book/main_matter_2.html" should contain "Even more stuff"
-    And the file "book/main_matter_2.html" should contain "styles.css"
+    And the file "book/main_matter_3.html" should contain "Even more stuff"
+    And the file "book/main_matter_3.html" should contain "styles.css"
     And the file "book/back_matter_1.html" should contain "This is the glossary"
     And the file "book/back_matter_1.html" should contain "styles.css"
     And the file "book/index.html" should contain "front_matter_1.html"
@@ -93,6 +94,7 @@ p, td, li {
     And the file "book/index.html" should contain "It Begins"
     And the file "book/index.html" should contain "main_matter_2.html"
     And the file "book/index.html" should contain "The continuation"
+    And the file "book/index.html" should contain "main_matter_3.html"
     And the file "book/index.html" should contain "styles.css"
     And the file "book/index.html" should contain "back_matter_1.html"
     And the file "book/index.html" should contain "Glossary"
