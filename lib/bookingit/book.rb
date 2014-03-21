@@ -17,6 +17,8 @@ module Bookingit
       generate_toc(toc,renderer.stylesheets,renderer.theme)
     end
 
+  private
+
     def generate_chapters(renderer)
       redcarpet = Redcarpet::Markdown.new(renderer, 
                                  no_intra_emphasis: true,
@@ -29,10 +31,10 @@ module Bookingit
       toc = {}
       %w(front_matter main_matter back_matter).each do |matter|
         toc[matter] = []
-        @config.send(matter).chapters.each_with_index do |chapter,i|
-          contents = File.read(chapter)
+        @config.send(matter).chapters.each do |chapter|
+          contents = File.read(chapter.markdown_path)
 
-          output_file = "#{matter}_#{i+1}.html"
+          output_file = chapter.relative_url
           File.open(File.join(@output_dir,output_file),'w') do |file|
             file.puts redcarpet.render(contents)
           end
@@ -60,8 +62,6 @@ module Bookingit
         index.puts view.render
       end
     end
-
-  private
 
     def copy_assets
       @config.rendering_config[:stylesheets].each do |stylesheet|

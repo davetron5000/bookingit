@@ -38,11 +38,11 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
       assert_equal @config[:whatever], @normalized_config.options['whatever']
       assert_equal @config[:authors], @normalized_config.options['authors']
       assert_equal 1,@normalized_config.front_matter.chapters.size
-      assert_equal File.join(@tempdir,'foo.md'),@normalized_config.front_matter.chapters[0]
+      assert_equal File.join(@tempdir,'foo.md'),@normalized_config.front_matter.chapters[0].markdown_path
       assert_equal 1,@normalized_config.main_matter.chapters.size
-      assert_equal File.join(@tempdir,'bar.md'),@normalized_config.main_matter.chapters[0]
+      assert_equal File.join(@tempdir,'bar.md'),@normalized_config.main_matter.chapters[0].markdown_path
       assert_equal 1,@normalized_config.back_matter.chapters.size
-      assert_equal File.join(@tempdir,'baz.md'),@normalized_config.back_matter.chapters[0]
+      assert_equal File.join(@tempdir,'baz.md'),@normalized_config.back_matter.chapters[0].markdown_path
     }
   end
 
@@ -60,11 +60,11 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
     }
     Then {
       assert_equal 1,@normalized_config.front_matter.chapters.size
-      assert_equal File.join(@tempdir,'foo.md'),@normalized_config.front_matter.chapters[0]
+      assert_equal File.join(@tempdir,'foo.md'),@normalized_config.front_matter.chapters[0].markdown_path
       assert_equal 1,@normalized_config.main_matter.chapters.size
-      assert_equal File.join(@tempdir,'bar.md'),@normalized_config.main_matter.chapters[0]
+      assert_equal File.join(@tempdir,'bar.md'),@normalized_config.main_matter.chapters[0].markdown_path
       assert_equal 1,@normalized_config.back_matter.chapters.size
-      assert_equal File.join(@tempdir,'baz.md'),@normalized_config.back_matter.chapters[0]
+      assert_equal File.join(@tempdir,'baz.md'),@normalized_config.back_matter.chapters[0].markdown_path
     }
   end
 

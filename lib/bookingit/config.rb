@@ -53,8 +53,18 @@ module Bookingit
       attr_reader :chapters
       def initialize(chapter_filenames,root_dir)
         @chapters = Array(chapter_filenames).map { |chapter_filename|
-          File.join(root_dir,chapter_filename)
+          Chapter.new(markdown_path: File.join(root_dir,chapter_filename))
         }
+      end
+    end
+
+    class Chapter
+      attr_reader :markdown_path, :relative_url
+      attr_accessor :title, :previous, :next
+
+      def initialize(markdown_path: nil, relative_url: nil)
+        @markdown_path = markdown_path
+        @relative_url = relative_url || (File.basename(markdown_path, File.extname(markdown_path)) + ".html")
       end
     end
   end

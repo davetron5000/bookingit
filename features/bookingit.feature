@@ -79,26 +79,26 @@ p, td, li {
     When I run `bookingit build`
     Then the exit status should be 0
     And a file named "book/styles.css" should exist
-    And the file "book/front_matter_1.html" should contain "This is the introduction"
-    And the file "book/front_matter_1.html" should contain "styles.css"
-    And the file "book/main_matter_1.html" should contain "This is the beginning"
-    And the file "book/main_matter_1.html" should contain "styles.css"
-    And the file "book/main_matter_1.html" should contain "ls"
-    And the file "book/main_matter_2.html" should contain "This is how we work"
-    And the file "book/main_matter_3.html" should contain "Even more stuff"
-    And the file "book/main_matter_3.html" should contain "styles.css"
-    And the file "book/back_matter_1.html" should contain "This is the glossary"
-    And the file "book/back_matter_1.html" should contain "styles.css"
+    And the file "book/intro.html" should contain "This is the introduction"
+    And the file "book/intro.html" should contain "styles.css"
+    And the file "book/chapter1.html" should contain "This is the beginning"
+    And the file "book/chapter1.html" should contain "styles.css"
+    And the file "book/chapter1.html" should contain "ls"
+    And the file "book/chapter2.html" should contain "This is how we work"
+    And the file "book/chapter3.html" should contain "Even more stuff"
+    And the file "book/chapter3.html" should contain "styles.css"
+    And the file "book/appendix.html" should contain "This is the glossary"
+    And the file "book/appendix.html" should contain "styles.css"
     And the file "book/index.html" should contain "OH YEAH"
-    And the file "book/index.html" should contain "front_matter_1.html"
+    And the file "book/index.html" should contain "intro.html"
     And the file "book/index.html" should contain "My awesome book"
-    And the file "book/index.html" should contain "main_matter_1.html"
+    And the file "book/index.html" should contain "chapter1.html"
     And the file "book/index.html" should contain "It Begins"
-    And the file "book/index.html" should contain "main_matter_2.html"
+    And the file "book/index.html" should contain "chapter2.html"
     And the file "book/index.html" should contain "The continuation"
-    And the file "book/index.html" should contain "main_matter_3.html"
+    And the file "book/index.html" should contain "chapter3.html"
     And the file "book/index.html" should contain "styles.css"
-    And the file "book/index.html" should contain "back_matter_1.html"
+    And the file "book/index.html" should contain "appendix.html"
     And the file "book/index.html" should contain "Glossary"
 
   Scenario: Init a new book
@@ -177,8 +177,8 @@ This is the beginning
     """
     When I run `bookingit build`
     Then the exit status should be 0
-    And the file "book/front_matter_1.html" should contain "This is the introduction"
-    And the file "book/main_matter_1.html" should contain "This is the beginning"
+    And the file "book/intro.html" should contain "This is the introduction"
+    And the file "book/chapter1.html" should contain "This is the beginning"
     And the file "book/index.html" should contain "OH YEAH"
     And the file "book/index.html" should contain "nosticate"
 
