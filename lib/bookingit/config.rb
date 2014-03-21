@@ -24,6 +24,18 @@ module Bookingit
       @rendering_config = create_rendering_config(config_hash.delete('rendering'))
       @cache            = false
       @options          = config_hash
+
+      all_chapters = (@front_matter.chapters + @main_matter.chapters + @back_matter.chapters)
+      all_chapters.each_with_index do |chapter,i|
+        if all_chapters[i-1]
+          all_chapters[i-1].next_chapter = chapter
+          chapter.previous_chapter = all_chapters[i-1]
+        end
+        if all_chapters[i+1]
+          all_chapters[i+1].previous_chapter = chapter
+          chapter.next_chapter = all_chapters[i+1]
+        end
+      end
     end
 
     def cache=(cache)
@@ -60,7 +72,7 @@ module Bookingit
 
     class Chapter
       attr_reader :markdown_path, :relative_url
-      attr_accessor :title, :previous, :next
+      attr_accessor :title, :previous_chapter, :next_chapter
 
       def initialize(markdown_path: nil, relative_url: nil)
         @markdown_path = markdown_path

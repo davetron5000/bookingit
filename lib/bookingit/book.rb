@@ -38,8 +38,8 @@ module Bookingit
           File.open(File.join(@output_dir,output_file),'w') do |file|
             file.puts redcarpet.render(contents)
           end
-          title = Array(renderer.headers[1]).first
-          toc[matter] << OpenStruct.new(href: output_file, title: title)
+          chapter.title = Array(renderer.headers[1]).first
+          toc[matter] << chapter
         end
       end
       toc
