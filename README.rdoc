@@ -87,6 +87,9 @@ The book's configuration is driven by +config.json+, which looks like so:
           ".super": "superscript",
           "/Makefile": "make"
         }
+      },
+      "templates": {
+        "index": "/full/path/to/index/html"
       }
     }
 
@@ -112,3 +115,38 @@ The +rendering+ section allows some control over the rendering process.  It supp
 +languages+:: A map of file extensions or regexps to language names for syntax detection.  If the key starts and ends with a +/+, it will be interpreted as a regexp, otherwise as a file extension
 +stylesheets+:: An array of stylesheets that will be copied and linked to each HTML page
 +syntax_theme+:: A highlight.js name for the syntax highlighting theme to use.
+
+The +templates+ section allows you to specify a Mustache template for various bits of the generated markup.  The files listed must be full-qualified paths and must omit the <code>.mustache</code> extension, which must be present on the file (e.g. if you specify <code>/tmp/foo.html</code>, the file should be located in <code>/tmp/foo.html.mustache</code>.
+
+Current templates are:
+
++index+:: The template of the main home page or splash page.  See the built-in one for values you have access to.
+
+In addition to values provided by bookingit, you can specify any values you want in your <code>config.json</code> file and they will be available in your templates under the +config+ namespace, e.g.:
+
+
+    {
+      "front_matter": "intro.md"
+      "main_matter": [
+        "chapter1.md",
+        "chapter2.md",
+        "chapter3.md",
+        "chapter4.md"
+      ],
+      "back_matter": "appendix.md",
+      "templates": {
+        "index": "/tmp/foo.html"
+      },
+      "title": "My Great Book!",
+      "subtitle": "A long journey from Milan to Minsk"
+    }
+
+Then, in <code>/tmp/foo.html</code>
+
+    <html>
+      <body>
+        <h1>{{#config}}{{title}}{{/config}}</h1>
+        <h2>{{#config}}{{subtitle}}{{/config}}</h2>
+      </body>
+    </html>
+

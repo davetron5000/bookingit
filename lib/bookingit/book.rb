@@ -44,6 +44,12 @@ module Bookingit
     end
 
     def generate_toc(toc,stylesheets,theme)
+      if @config.templates["index"] =~ /^\//
+        Views::IndexView.template_path = File.dirname(@config.templates["index"])
+        Views::IndexView.template_name = File.basename(@config.templates["index"])
+      else
+        Views::IndexView.template_name = @config.templates["index"]
+      end
       view = Views::IndexView.new(stylesheets,
                                   theme,
                                   toc['front_matter'],

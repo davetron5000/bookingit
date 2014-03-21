@@ -10,7 +10,8 @@ module Bookingit
                 :back_matter,
                 :rendering_config,
                 :cache,
-                :options
+                :options,
+                :templates
 
     def initialize(config_json,root_dir)
       config_hash = JSON.parse(config_json)
@@ -18,6 +19,8 @@ module Bookingit
       @front_matter     = Matter.new(config_hash.delete('front_matter'),root_dir)
       @main_matter      = Matter.new(config_hash.delete('main_matter'),root_dir)
       @back_matter      = Matter.new(config_hash.delete('back_matter'),root_dir)
+      @templates        = config_hash.delete("templates") || {}
+      @templates["index"] ||= "index.html"
       @rendering_config = create_rendering_config(config_hash.delete('rendering'))
       @cache            = false
       @options          = config_hash
