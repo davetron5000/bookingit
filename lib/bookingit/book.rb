@@ -48,7 +48,8 @@ module Bookingit
                                   theme,
                                   toc['front_matter'],
                                   toc['main_matter'],
-                                  toc['back_matter'])
+                                  toc['back_matter'],
+                                  @config)
       File.open(File.join(@output_dir,'index.html'),'w') do |index|
         index.puts view.render
       end

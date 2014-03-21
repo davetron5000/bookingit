@@ -9,16 +9,18 @@ module Bookingit
                 :main_matter,
                 :back_matter,
                 :rendering_config,
-                :cache
+                :cache,
+                :options
 
     def initialize(config_json,root_dir)
       config_hash = JSON.parse(config_json)
 
-      @front_matter     = Matter.new(config_hash['front_matter'],root_dir)
-      @main_matter      = Matter.new(config_hash['main_matter'],root_dir)
-      @back_matter      = Matter.new(config_hash['back_matter'],root_dir)
-      @rendering_config = create_rendering_config(config_hash['rendering'])
+      @front_matter     = Matter.new(config_hash.delete('front_matter'),root_dir)
+      @main_matter      = Matter.new(config_hash.delete('main_matter'),root_dir)
+      @back_matter      = Matter.new(config_hash.delete('back_matter'),root_dir)
+      @rendering_config = create_rendering_config(config_hash.delete('rendering'))
       @cache            = false
+      @options          = config_hash
     end
 
     def cache=(cache)

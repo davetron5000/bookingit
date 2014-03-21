@@ -17,6 +17,13 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
     Given :some_markdown_files
     And {
       @config = {
+        title: "blah town",
+        subtitle: "the town of blah",
+        whatever: "foobar",
+        authors: [
+          "Shane Vendrel",
+          "Ronnie Gardocki",
+        ],
         front_matter: "foo.md",
         main_matter: "bar.md",
         back_matter: "baz.md",
@@ -26,6 +33,10 @@ class Bookingit::ConfigTest < Test::Unit::TestCase
       @normalized_config = Bookingit::Config.new(@config.to_json,@tempdir)
     }
     Then {
+      assert_equal @config[:title], @normalized_config.options['title']
+      assert_equal @config[:subtitle], @normalized_config.options['subtitle']
+      assert_equal @config[:whatever], @normalized_config.options['whatever']
+      assert_equal @config[:authors], @normalized_config.options['authors']
       assert_equal 1,@normalized_config.front_matter.chapters.size
       assert_equal File.join(@tempdir,'foo.md'),@normalized_config.front_matter.chapters[0]
       assert_equal 1,@normalized_config.main_matter.chapters.size

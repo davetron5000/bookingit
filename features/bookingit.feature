@@ -59,6 +59,7 @@ p, td, li {
     And this config file:
     """
 {
+  "title": "OH YEAH!",
   "front_matter": [
     "intro.md"
   ],
@@ -89,6 +90,7 @@ p, td, li {
     And the file "book/main_matter_3.html" should contain "styles.css"
     And the file "book/back_matter_1.html" should contain "This is the glossary"
     And the file "book/back_matter_1.html" should contain "styles.css"
+    And the file "book/index.html" should contain "OH YEAH"
     And the file "book/index.html" should contain "front_matter_1.html"
     And the file "book/index.html" should contain "My awesome book"
     And the file "book/index.html" should contain "main_matter_1.html"
