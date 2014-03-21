@@ -39,7 +39,7 @@ class RendererTest < Test::Unit::TestCase
     Given a_file_with_extension(".blah") 
     When render_file_url_code_block
     Then {
-      assert_equal %{<article class='code-listing'><pre><code>#{@code}</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="">#{@code}</code></pre><footer><h1>#{@relative_path}</h1></footer></article>},@html
     }
   end
 
@@ -264,7 +264,7 @@ quux
       @html = renderer.block_code("class Foo", nil)
     }
     Then {
-      assert_equal %{<article class='code-listing'><pre><code>class Foo</code></pre></article>},@html
+      assert_equal %{<article class='code-listing'><pre><code class="">class Foo</code></pre></article>},@html
     }
   end
 

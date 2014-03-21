@@ -1,6 +1,3 @@
-require 'mustache'
-require 'ostruct'
-
 module Bookingit
   class Book
     def initialize(config)
@@ -17,16 +14,17 @@ module Bookingit
 
       copy_assets
       toc = generate_chapters(renderer)
-      generate_toc(toc,renderer)
+      generate_toc(toc,renderer.stylesheets,renderer.theme)
     end
 
     def generate_chapters(renderer)
-      redcarpet = Redcarpet::Markdown.new(renderer, no_intra_emphasis: true,
-                                          tables: true,
-                                          fenced_code_blocks: true,
+      redcarpet = Redcarpet::Markdown.new(renderer, 
+                                 no_intra_emphasis: true,
+                                            tables: true,
+                                fenced_code_blocks: true,
                                           autolink: true,
-                                          strikethrough: true,
-                                          superscript: true)
+                                     strikethrough: true,
+                                       superscript: true)
 
       toc = {}
       %w(front_matter main_matter back_matter).each do |matter|
@@ -39,24 +37,18 @@ module Bookingit
             file.puts redcarpet.render(contents)
           end
           title = Array(renderer.headers[1]).first
-          toc[matter] << [output_file,title]
+          toc[matter] << OpenStruct.new(href: output_file, title: title)
         end
       end
       toc
     end
 
-    def structify
-      -> (matter) {
-        OpenStruct.new(href: matter[0], title: matter[1])
-      }
-    end
-
-    def generate_toc(toc,renderer)
-      view = IndexView.new(renderer.header_text,
-                           renderer.doc_footer,
-                           toc['front_matter'].map(&structify),
-                           toc['main_matter'].map(&structify),
-                           toc['back_matter'].map(&structify))
+    def generate_toc(toc,stylesheets,theme)
+      view = Views::IndexView.new(stylesheets,
+                                  theme,
+                                  toc['front_matter'],
+                                  toc['main_matter'],
+                                  toc['back_matter'])
       File.open(File.join(@output_dir,'index.html'),'w') do |index|
         index.puts view.render
       end
@@ -65,23 +57,8 @@ module Bookingit
   private
 
     def copy_assets
-
       @config.rendering_config[:stylesheets].each do |stylesheet|
         cp stylesheet, @output_dir
-      end
-    end
-
-    class IndexView < Mustache
-      self.template_path = File.expand_path(File.join(File.dirname(__FILE__),'..','..','templates'))
-      self.template_name = 'index.html'
-
-      attr_reader :header, :footer, :front_matter, :main_matter, :back_matter
-      def initialize(header,footer,front_matter,main_matter,back_matter)
-        @header = header
-        @footer = footer
-        @front_matter = front_matter
-        @main_matter = main_matter
-        @back_matter = back_matter
       end
     end
   end

@@ -28,37 +28,21 @@ module Bookingit
       @cachedir             = options[:cache]
     end
 
-    attr_accessor :headers
+    attr_accessor :headers, :stylesheets, :theme
+
     def header(text,header_level,anchor)
       @headers[header_level] ||= []
       @headers[header_level] << text
       "<h#{header_level}>#{text}</h#{header_level}>"
     end
 
-    def header_text
-      %{<!DOCTYPE html>
-<html>
-<head>
-} + @stylesheets.map { |stylesheet|
-        "  <link href='#{stylesheet}' rel='stylesheet' type='text/css' media='all'>"
-      }.join("\n") + %{
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/styles/#{@theme}.min.css">
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.0/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
-</head>
-<body>
-      }
-    end
-
     def doc_header
       @headers = {}
-      header_text
+      Views::HeaderView.new(@stylesheets,@theme).render
     end
 
     def doc_footer
-      "</body></html>"
+      Views::FooterView.new.render
     end
 
     EXTENSION_TO_LANGUAGE = {
@@ -88,10 +72,8 @@ module Bookingit
         .otherwise {
           [code,language,nil]
         }.result
-
-        result = %{<article class='code-listing'><pre><code#{css_class(language)}>#{CGI.escapeHTML(code)}</code></pre>#{filename_footer(filename)}</article>}
       end
-      result
+      Views::CodeView.new(code,filename,language).render.strip
     end
 
   private

@@ -1,3 +1,4 @@
+require 'bookingit/views'
 require 'bookingit/version.rb'
 require 'bookingit/errors.rb'
 require 'bookingit/code_block_interpreter.rb'
