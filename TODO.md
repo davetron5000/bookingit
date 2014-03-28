@@ -1,6 +1,5 @@
 # TODO
 
-* Links to next/previous chapters
 * Asset management (e.g. images)
 * Better TOC page
 * Better diffs

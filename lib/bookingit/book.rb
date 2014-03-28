@@ -10,7 +10,7 @@ module Bookingit
 
       rendering_config = @config.rendering_config
       rendering_config[:cache] = File.expand_path('cache') if @config.cache
-      renderer = Bookingit::Renderer.new(@config.rendering_config)
+      renderer = Bookingit::Renderer.new(@config)
 
       copy_assets
       toc = generate_chapters(renderer)

@@ -15,7 +15,7 @@ class RendererTest < Test::Unit::TestCase
   end
 
   def renderer(options={})
-    options = { basedir: @tempdir }.merge(options)
+    options = OpenStruct.new(:rendering_config => { basedir: @tempdir }.merge(options))
     Bookingit::Renderer.new(options)
   end
 

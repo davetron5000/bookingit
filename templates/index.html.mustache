@@ -1,28 +1,16 @@
 {{> header.html}}
 {{#config}}
-<h1>{{title}}</h1>
+<h2 class="subtitle">{{subtitle}}</h2>
 {{/config}}
 <ol>
-  <li>Front Matter
-    <ol>
-      {{#front_matter}}
-      <li><a href="{{relative_url}}">{{{title}}}</a></li>
-      {{/front_matter}}
-    </ol>
-  </li>
-  <li>Main Matter
-    <ol>
-      {{#main_matter}}
-      <li><a href="{{relative_url}}">{{{title}}}</a></li>
-      {{/main_matter}}
-    </ol>
-  </li>
-  <li>Back Matter
-    <ol>
-      {{#back_matter}}
-      <li><a href="{{relative_url}}">{{{title}}}</a></li>
-      {{/back_matter}}
-    </ol>
-  </li>
+  {{#front_matter}}
+    <li><a href="{{relative_url}}">{{{title}}}</a></li>
+  {{/front_matter}}
+  {{#main_matter}}
+    <li><a href="{{relative_url}}">{{{title}}}</a></li>
+  {{/main_matter}}
+  {{#back_matter}}
+    <li><a href="{{relative_url}}">{{{title}}}</a></li>
+  {{/back_matter}}
 </ol>
 {{> footer.html}}

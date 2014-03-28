@@ -5,9 +5,9 @@ module Bookingit
 
       attr_reader :chapter
 
-      def initialize(chapter)
+      def initialize(chapter,config)
         @chapter = chapter
-        super()
+        super(config)
       end
     end
   end

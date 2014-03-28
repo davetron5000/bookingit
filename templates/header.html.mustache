@@ -4,6 +4,13 @@
   {{> stylesheets.html }}
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
   <meta charset="utf-8">
+  <title>{{config.title}}: {{config.subtitle}}</title>
   {{> syntax_highlighting.html }}
 </head>
 <body>
+  <h1><a href="index.html">{{config.title}}</a></h1>
+  {{#config}}
+    {{#author}}
+      <p class="byline">by {{config.author}}</p>
+    {{/author}}
+  {{/config}}

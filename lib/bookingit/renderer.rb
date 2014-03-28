@@ -6,13 +6,9 @@ module Bookingit
   class Renderer < Redcarpet::Render::HTML
     include FileUtils
 
-    # options:: control aspects of rendering
-    #           basedir:: Base directory from which all relative paths are referenced from
-    #           stylesheets:: Array of CSS files to include in the preamble
-    #           languages:: a Hash of string extensions or regexps to languages.  This allows adding
-    #                       new language detection not present by default
-    def initialize(options={})
+    def initialize(config)
       super()
+      options = config.rendering_config
       additional_languages = Hash[(options[:languages] || {}).map { |ext_or_regexp,language|
         if ext_or_regexp.kind_of? String
           [/#{ext_or_regexp}$/,language]
@@ -26,6 +22,7 @@ module Bookingit
       @stylesheets          = Array(options[:stylesheets])
       @theme                = options[:theme] || "default"
       @cachedir             = options[:cache]
+      @config               = config
     end
 
     attr_accessor :headers, :stylesheets, :theme
@@ -37,16 +34,16 @@ module Bookingit
     def header(text,header_level,anchor)
       @headers[header_level] ||= []
       @headers[header_level] << text
-      "<h#{header_level}>#{text}</h#{header_level}>"
+      "<h#{header_level+1}>#{text}</h#{header_level+1}>"
     end
 
     def doc_header
       @headers = {}
-      Views::HeaderView.new(@stylesheets,@theme).render
+      Views::HeaderView.new(@stylesheets,@theme,@config).render
     end
 
     def doc_footer
-      Views::FooterView.new(@chapter).render
+      Views::FooterView.new(@chapter,@config).render
     end
 
     EXTENSION_TO_LANGUAGE = {
@@ -77,7 +74,7 @@ module Bookingit
           [code,language,nil]
         }.result
       end
-      Views::CodeView.new(code,filename,language).render.strip
+      Views::CodeView.new(code,filename,language,@config).render.strip
     end
 
   private
