@@ -30,6 +30,10 @@ module Bookingit
 
     attr_accessor :headers, :stylesheets, :theme
 
+    def current_chapter=(chapter)
+      @chapter = chapter
+    end
+
     def header(text,header_level,anchor)
       @headers[header_level] ||= []
       @headers[header_level] << text
@@ -42,7 +46,7 @@ module Bookingit
     end
 
     def doc_footer
-      Views::FooterView.new.render
+      Views::FooterView.new(@chapter).render
     end
 
     EXTENSION_TO_LANGUAGE = {

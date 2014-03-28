@@ -27,11 +27,11 @@ module Bookingit
 
       all_chapters = (@front_matter.chapters + @main_matter.chapters + @back_matter.chapters)
       all_chapters.each_with_index do |chapter,i|
-        if all_chapters[i-1]
+        if i > 0
           all_chapters[i-1].next_chapter = chapter
           chapter.previous_chapter = all_chapters[i-1]
         end
-        if all_chapters[i+1]
+        if i < (all_chapters.size-1)
           all_chapters[i+1].previous_chapter = chapter
           chapter.next_chapter = all_chapters[i+1]
         end

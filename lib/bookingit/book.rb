@@ -35,6 +35,7 @@ module Bookingit
           contents = File.read(chapter.markdown_path)
 
           output_file = chapter.relative_url
+          renderer.current_chapter = chapter
           File.open(File.join(@output_dir,output_file),'w') do |file|
             file.puts redcarpet.render(contents)
           end
