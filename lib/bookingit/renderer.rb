@@ -35,7 +35,10 @@ module Bookingit
     def header(text,header_level,anchor)
       @headers[header_level] ||= []
       @headers[header_level] << text
-      "<h#{header_level+1}>#{text}</h#{header_level+1}>"
+      if header_level == 2
+        @chapter.add_section(text,anchor)
+      end
+      "<a name='#{anchor}'></a><h#{header_level+1}>#{text}</h#{header_level+1}>"
     end
 
     def image(link, title, alt_text)

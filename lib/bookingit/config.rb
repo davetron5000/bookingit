@@ -71,12 +71,19 @@ module Bookingit
     end
 
     class Chapter
-      attr_reader :markdown_path, :relative_url
+      attr_reader :markdown_path, :relative_url, :sections
       attr_accessor :title, :previous_chapter, :next_chapter
 
       def initialize(markdown_path: nil, relative_url: nil)
         @markdown_path = markdown_path
         @relative_url = relative_url || (File.basename(markdown_path, File.extname(markdown_path)) + ".html")
+        @sections = []
+      end
+
+      def add_section(title,anchor)
+        section = Chapter.new(relative_url: self.relative_url + "##{anchor}")
+        section.title = title
+        @sections << section
       end
     end
   end

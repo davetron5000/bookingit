@@ -2,15 +2,26 @@
 {{#config}}
 <h2 class="subtitle">{{subtitle}}</h2>
 {{/config}}
-<ol>
+<ol class="front-matter">
   {{#front_matter}}
-    <li><a href="{{relative_url}}">{{{title}}}</a></li>
+    <li class='chapter'><a href="{{relative_url}}">{{{title}}}</a></li>
   {{/front_matter}}
+</ol>
+<ol class="main-matter">
   {{#main_matter}}
-    <li><a href="{{relative_url}}">{{{title}}}</a></li>
+    <li class='chapter'>
+      <a href="{{relative_url}}">{{{title}}}</a>
+      <ol>
+      {{#sections}}
+      <li class='section'><a href="{{relative_url}}">{{{title}}}</a></li>
+      {{/sections}}
+      </ol>
+    </li class='chapter'>
   {{/main_matter}}
+</ol>
+<ol class="back-matter">
   {{#back_matter}}
-    <li><a href="{{relative_url}}">{{{title}}}</a></li>
+    <li class='chapter'><a href="{{relative_url}}">{{{title}}}</a></li>
   {{/back_matter}}
 </ol>
 {{> footer.html}}
