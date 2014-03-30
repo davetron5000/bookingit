@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bookingit (0.0.1)
+    bookingit (0.1.0)
       gli
       mustache
       redcarpet
