@@ -1,6 +1,5 @@
 # TODO
 
-* Asset management (e.g. images)
 * Better TOC page
 * Better diffs
 * Ability to highlight certain lines

@@ -2,10 +2,24 @@
 {{#chapter}}
   <ol>
     {{#previous_chapter}}
-      <li class="previous"><a href="{{relative_url}}">&larr; Previous</a></li>
+    <li class="previous"><a href="{{relative_url}}">&larr; 
+        {{#title}}
+        {{{title}}}
+        {{/title}}
+        {{^title}}
+        Previous
+        {{/title}}
+    </a></li>
     {{/previous_chapter}}
     {{#next_chapter}}
-      <li class="next"><a href="{{relative_url}}">Next &rarr;</a></li>
+    <li class="next"><a href="{{relative_url}}">
+        {{#title}}
+        {{{title}}}
+        {{/title}}
+        {{^title}}
+        Next
+        {{/title}}
+        &rarr;</a></li>
     {{/next_chapter}}
   </ol>
   <div class="clearfix"></div>

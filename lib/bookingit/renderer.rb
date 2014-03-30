@@ -23,9 +23,10 @@ module Bookingit
       @theme                = options[:theme] || "default"
       @cachedir             = options[:cache]
       @config               = config
+      @images               = []
     end
 
-    attr_accessor :headers, :stylesheets, :theme
+    attr_accessor :headers, :stylesheets, :theme, :images
 
     def current_chapter=(chapter)
       @chapter = chapter
@@ -35,6 +36,12 @@ module Bookingit
       @headers[header_level] ||= []
       @headers[header_level] << text
       "<h#{header_level+1}>#{text}</h#{header_level+1}>"
+    end
+
+    def image(link, title, alt_text)
+      title = title.gsub(/'/,'"') if title
+      @images << link
+      "<img src='#{link}' alt='#{alt_text}' title='#{title}'>"
     end
 
     def doc_header
