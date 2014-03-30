@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
   <meta charset="utf-8">
   <title>{{config.title}}: {{config.subtitle}}</title>
+  {{#config}}
+  {{#typekit}}
+  <script type="text/javascript" src="//use.typekit.net/{{id}}.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  {{/typekit}}
+  {{/config}}
   {{> syntax_highlighting.html }}
 </head>
 <body>
