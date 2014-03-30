@@ -38,6 +38,7 @@ command :init do |c|
 end
 
 desc 'build your book from markdown files'
+arg_name '[output_dir]'
 command :build do |c|
   c.desc "Use cache for code samples and console sessions"
   c.default_value true
@@ -45,7 +46,7 @@ command :build do |c|
   c.action do |global_options,options,args|
     config = Bookingit::Config.new(File.read('config.json'),File.expand_path('.'))
     config.cache = options[:cache]
-    book = Bookingit::Book.new(config)
+    book = Bookingit::Book.new(config,args.shift)
     book.render_html!
   end
 end
