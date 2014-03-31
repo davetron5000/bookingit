@@ -150,3 +150,9 @@ Then, in <code>/tmp/foo.html</code>
       </body>
     </html>
 
+There are a few other options that control content:
+
++clicky+:: If present, the +id+ attribute will be used to set up Clicky tracking
++typekit+:: If present, the +id+ attribute will be used to insert the TypeKit boilerplate
++favicon+:: If set to +true+, will include <code>/favicon.ico</code> meta tag in your output
++applie-mobile-web+:: If set to +true+, will include a few meta tags that help the app work in "bookmarked to the homescreen" mode

@@ -1,8 +1,8 @@
 module Bookingit
   class Book
-    def initialize(config,output_dir='book')
+    def initialize(config,output_dir=nil)
       @config = config
-      @output_dir = output_dir
+      @output_dir = output_dir || 'book'
     end
 
     def render_html!

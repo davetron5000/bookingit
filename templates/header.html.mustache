@@ -10,6 +10,38 @@
   <script type="text/javascript" src="//use.typekit.net/{{id}}.js"></script>
   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
   {{/typekit}}
+  {{#favicon}}
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  {{/favicon}}
+  {{#apple-mobile-web}}
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <script>
+    // Mobile Safari in standalone mode - don't shell out to Mobile Safari
+    // Courtesy https://gist.github.com/kylebarrow/1042026
+    if(("standalone" in window.navigator) && window.navigator.standalone){
+
+      var noddy, remotes = false;
+
+      document.addEventListener('click', function(event) {
+
+        noddy = event.target;
+
+        // Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+        while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+          noddy = noddy.parentNode;
+        }
+
+        if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes)) {
+          event.preventDefault();
+          document.location.href = noddy.href;
+        }
+
+      },false);
+    }
+  </script>
+  {{/apple-mobile-web}}
+  
   {{/config}}
   {{> syntax_highlighting.html }}
 </head>
