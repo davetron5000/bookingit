@@ -45,10 +45,12 @@
   {{/config}}
   {{> syntax_highlighting.html }}
 </head>
-<body>
-  <h1><a href="index.html">{{config.title}}</a></h1>
-  {{#config}}
-    {{#author}}
-      <p class="byline">by {{config.author}}</p>
-    {{/author}}
-  {{/config}}
+<body><div class="page">
+  <header>
+    <h1><a href="index.html">{{config.title}}</a></h1>
+    {{#config}}
+      {{#author}}
+        <p class="byline">by {{config.author}}</p>
+      {{/author}}
+    {{/config}}
+  </header>

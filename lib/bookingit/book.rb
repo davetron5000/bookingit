@@ -31,6 +31,7 @@ module Bookingit
       each_chapter do |matter,contents,chapter|
         toc[matter] ||= []
         renderer.current_chapter = chapter
+        renderer.record_sections = true
         @redcarpet.render(contents)
         chapter.title = Array(renderer.headers[1]).first
         toc[matter] << chapter
@@ -50,6 +51,7 @@ module Bookingit
       each_chapter do |_,contents,chapter|
         output_file = chapter.relative_url
         renderer.current_chapter = chapter
+        renderer.record_sections = false
         File.open(File.join(@output_dir,output_file),'w') do |file|
           file.puts @redcarpet.render(contents)
         end

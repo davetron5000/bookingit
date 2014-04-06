@@ -32,10 +32,14 @@ module Bookingit
       @chapter = chapter
     end
 
+    def record_sections=(record_sections)
+      @record_sections = record_sections
+    end
+
     def header(text,header_level,anchor)
       @headers[header_level] ||= []
       @headers[header_level] << text
-      if header_level == 2
+      if header_level == 2 && @record_sections
         @chapter.add_section(text,anchor)
       end
       "<a name='#{anchor}'></a><h#{header_level+1}>#{text}</h#{header_level+1}>"
