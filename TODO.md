@@ -1,6 +1,6 @@
 # TODO
 
-* Better TOC page
+* ebooks
 * Better diffs
 * Ability to highlight certain lines
 * Ability to show only certain lines from a file
