@@ -5,7 +5,7 @@ spec = Gem::Specification.new do |s|
   s.version = Bookingit::VERSION
   s.author = 'Dave Copeland'
   s.email = 'davetron5000@gmail.com'
-  s.homepage = 'http://www.naildrivin5.com'
+  s.homepage = 'http://github.com/davetron5000/bookingit'
   s.platform = Gem::Platform::RUBY
   s.summary = 'Write a code-heavy book in Markdown'
 # Add your other files here if you make them
