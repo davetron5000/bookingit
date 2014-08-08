@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    bookingit (0.4.0)
+    bookingit (0.4.1)
       gli
       mustache
-      redcarpet
+      redcarpet (= 3.1.1)
 
 GEM
   remote: https://rubygems.org/
