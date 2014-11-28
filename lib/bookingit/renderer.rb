@@ -158,7 +158,7 @@ module Bookingit
     def read_git_diff(path_in_repo,reference)
       puts "Calculating git diff #{reference}"
       filename = path_in_repo
-      shell_command = ShellCommand.new(command: "git diff #{reference} #{path_in_repo}")
+      shell_command = ShellCommand.new(command: "git diff --no-ext-diff #{reference} #{path_in_repo}")
       shell_command.run!
       [ shell_command.stdout, 'diff', filename ]
     end
