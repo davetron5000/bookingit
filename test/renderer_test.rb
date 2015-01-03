@@ -4,7 +4,7 @@ require 'fileutils'
 
 include FileUtils
 
-class RendererTest < Test::Unit::TestCase
+class HtmlRendererTest < Test::Unit::TestCase
 
   def setup
     @tempdir = Dir.mktmpdir
@@ -16,7 +16,7 @@ class RendererTest < Test::Unit::TestCase
 
   def renderer(options={})
     options = OpenStruct.new(:rendering_config => { basedir: @tempdir }.merge(options))
-    Bookingit::Renderer.new(options)
+    Bookingit::HtmlRenderer.new(options)
   end
 
   test_that "block_code can read a file URL and guess ruby" do

@@ -42,22 +42,22 @@ module Bookingit
       if header_level == 2 && @record_sections
         @chapter.add_section(text,anchor)
       end
-      "<a name='#{anchor}'></a><h#{header_level+1}>#{text}</h#{header_level+1}>"
+      render_header(text,header_level,anchor)
     end
 
     def image(link, title, alt_text)
       title = title.gsub(/'/,'"') if title
       @images << link
-      "<img src='#{link}' alt='#{alt_text}' title='#{title}'>"
+      render_image(link, title, alt_text)
     end
 
     def doc_header
       @headers = {}
-      Views::HeaderView.new(@stylesheets,@theme,@config).render
+      render_doc_header
     end
 
     def doc_footer
-      Views::FooterView.new(@chapter,@config).render
+      render_doc_footer
     end
 
     EXTENSION_TO_LANGUAGE = {
@@ -88,7 +88,7 @@ module Bookingit
           [code,language,nil]
         }.result
       end
-      Views::CodeView.new(code,filename,language,@config).render.strip
+      render_block_code(code,filename,language)
     end
 
   private
@@ -185,22 +185,6 @@ module Bookingit
     def run_shell_command(shell_command)
       shell_command.run!
       ["> #{shell_command.command}\n#{shell_command.stdout}",'shell']
-    end
-
-    def css_class(language)
-      if language.nil? || language.strip == ''
-        ""
-      else
-        " class=\"language-#{language}\""
-      end
-    end
-
-    def filename_footer(filename)
-      if filename && filename.strip != ''
-        %{<footer><h1>#{filename}</h1></footer>}
-      else
-        ''
-      end
     end
   end
 end
