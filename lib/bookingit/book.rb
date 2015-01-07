@@ -10,7 +10,7 @@ module Bookingit
 
       rendering_config = @config.rendering_config
       rendering_config[:cache] = File.expand_path('cache') if @config.cache
-      renderer = Bookingit::Renderer.new(@config)
+      renderer = Bookingit::HtmlRenderer.new(@config)
       @redcarpet = Redcarpet::Markdown.new(renderer, no_intra_emphasis: true,
                                                                 tables: true,
                                                     fenced_code_blocks: true,

@@ -6,6 +6,8 @@ A basic publishing system that takes Mardown and Git repositories and produces a
 * PDF
 * EBook
 
+<b>This only produces a website version, currently</b>
+
 The idea is that you can show the evolution of code by referencing particular versions or diffs beteween verions.  Further, you can show the actual output of commands run from particular verisons of the repo.
 
 
