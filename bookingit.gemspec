@@ -21,6 +21,7 @@ spec = Gem::Specification.new do |s|
   s.add_development_dependency('aruba')
   s.add_development_dependency('clean_test')
   s.add_development_dependency('mocha')
+  s.add_development_dependency('test-unit')
   s.add_runtime_dependency('gli')
   s.add_runtime_dependency('redcarpet','3.1.1') # 3.1.2 made a breaking change. Yup
   s.add_runtime_dependency('mustache')
